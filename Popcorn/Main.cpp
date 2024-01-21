@@ -119,6 +119,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    return TRUE;
 }
+
 //------------------------------------------------------------------------------------------------------------
 //Отрисовка экрана игры
 void Draw_Frame(HDC hdc)
