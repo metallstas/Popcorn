@@ -13,8 +13,10 @@ enum EBrick_Type
    EBT_Blue
 };
 
-HPEN Pen_Pink, Pen_Blue, Pen_White, Letter_Pen;
-HBRUSH Brush_Pink, Brush_Blue, Brush_White;
+HPEN Pen_Pink, Pen_Blue, Pen_White, Pen_Black, Letter_Pen;
+HBRUSH Brush_Pink, Brush_Blue, Brush_Black, Brush_White;
+
+HWND Hwnd;
 
 const int Global_Scale = 3;
 const int Brick_Width = 15;
@@ -23,11 +25,21 @@ const int Cell_Width = 16;
 const int Cell_Height = 8;
 const int Level_X_Offset = 8;
 const int Level_Y_Offset = 6;
+const int Level_Width = 14;
+const int Level_Height = 12;
 const int Circle_Size = 7;
+const int Platform_Y_Pos = 185;
+const int Platform_Height = 7;
 
 int Inner_Width = 21;
+int Platform_X_Pos = 100;
+int Platform_X_Step = 6;
+int Platform_Width = 28;
 
-char Level_01[14][12] =
+RECT Platform_Rect, Prev_Platform_Rect;
+RECT Level_Rect;
+
+char Level_01[Level_Width][Level_Height] =
 {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -54,14 +66,42 @@ void Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char b, HPEN &p
 
 //------------------------------------------------------------------------------------------------------------
 
-void Init()
+void Redraw_Platform()
+{//Отрисовка экрана игры
+
+   Prev_Platform_Rect = Platform_Rect;
+
+   Platform_Rect.left = Platform_X_Pos * Global_Scale;
+   Platform_Rect.top = Platform_Y_Pos * Global_Scale;
+   Platform_Rect.right = (Platform_Rect.left + Platform_Width) * Global_Scale;
+   Platform_Rect.bottom = (Platform_Rect.top + Platform_Height) * Global_Scale;
+
+   InvalidateRect(Hwnd, &Prev_Platform_Rect, FALSE);
+   InvalidateRect(Hwnd, &Platform_Rect, FALSE);
+
+ }
+//------------------------------------------------------------------------------------------------------------
+
+
+void Init_Engine(HWND hWnd)
 {//Настройка игры при старте
+
+   Hwnd = hWnd;
 
    Create_Pen_Brush(255, 85, 255, Pen_Pink, Brush_Pink);
    Create_Pen_Brush(85, 255, 255, Pen_Blue, Brush_Blue);
    Create_Pen_Brush(255, 255, 255, Pen_White, Brush_White);
+   Create_Pen_Brush(0, 0, 0, Pen_Black, Brush_Black);
 
    Letter_Pen = CreatePen(PS_SOLID, 3, RGB(255, 255, 255));
+
+   Level_Rect.left = Level_X_Offset * Global_Scale;
+   Level_Rect.top = Level_Y_Offset * Global_Scale;
+   Level_Rect.right = Level_Rect.left * Cell_Width * Level_Width * Global_Scale;
+   Level_Rect.bottom = Level_Rect.top * Cell_Height * Level_Height * Global_Scale;
+
+
+   Redraw_Platform();
 }
 //------------------------------------------------------------------------------------------------------------
 
@@ -236,6 +276,11 @@ void Draw_Platform(HDC hdc, int x, int y)
    //Отрисовка Платформы
    //Рисуем боковые шарики
 
+   SelectObject(hdc, Pen_Black);
+   SelectObject(hdc, Brush_Black);
+
+   Rectangle(hdc, Prev_Platform_Rect.left, Prev_Platform_Rect.top, Prev_Platform_Rect.right, Prev_Platform_Rect.bottom);
+
    SelectObject(hdc, Pen_Pink);
    SelectObject(hdc, Brush_Pink);
 
@@ -257,18 +302,53 @@ void Draw_Platform(HDC hdc, int x, int y)
 }
 
 //------------------------------------------------------------------------------------------------------------
-void Draw_Frame(HDC hdc)
+void Draw_Frame(HDC hdc, RECT &paint_area)
 {//Отрисовка экрана игры
 
-   //Draw_Level(hdc);
+   RECT intersection_rect;
 
-   //Draw_Platform(hdc, 100, 150);
-
-   for (int i = 0; i < 16; i++)
+   if (IntersectRect(&intersection_rect, &paint_area, &Level_Rect))
    {
-      Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 100, EBT_Blue, ELT_O, i);
-      Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 130, EBT_Pink, ELT_O, i);
+   Draw_Level(hdc);
    }
 
+   if (IntersectRect(&intersection_rect, &paint_area, &Platform_Rect))
+   {
+      Draw_Platform(hdc, Platform_X_Pos, Platform_Y_Pos);
+   }
    
+
+   //for (int i = 0; i < 16; i++)
+   //{
+   //   Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 100, EBT_Blue, ELT_O, i);
+   //   Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 130, EBT_Pink, ELT_O, i);
+   //}
+
+   
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+
+int On_Key_Down(EKey_Type key_type)
+{
+
+   switch (key_type)
+   {
+   case EKT_Left:
+      Platform_X_Pos -= Platform_X_Step;
+      Redraw_Platform( );
+      break;
+   case EKT_Right:
+      Platform_X_Pos += Platform_X_Step;
+      Redraw_Platform();
+      break;
+   case EKT_Space:
+      break;
+   default:
+      break;
+   }
+
+   return 0;
 }
