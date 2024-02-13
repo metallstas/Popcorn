@@ -100,8 +100,10 @@ void Init_Engine(HWND hWnd)
    Level_Rect.right = Level_Rect.left * Cell_Width * Level_Width * Global_Scale;
    Level_Rect.bottom = Level_Rect.top * Cell_Height * Level_Height * Global_Scale;
 
-
    Redraw_Platform();
+
+   SetTimer(Hwnd, Timer_ID, 50, 0);
+
 }
 //------------------------------------------------------------------------------------------------------------
 
@@ -309,7 +311,7 @@ void Draw_Frame(HDC hdc, RECT &paint_area)
 
    if (IntersectRect(&intersection_rect, &paint_area, &Level_Rect))
    {
-   Draw_Level(hdc);
+      Draw_Level(hdc);
    }
 
    if (IntersectRect(&intersection_rect, &paint_area, &Platform_Rect))
@@ -323,6 +325,14 @@ void Draw_Frame(HDC hdc, RECT &paint_area)
    //   Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 100, EBT_Blue, ELT_O, i);
    //   Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 130, EBT_Pink, ELT_O, i);
    //}
+
+   int x = (Level_X_Offset + 20) * Global_Scale;
+   int y = (Level_Y_Offset + 180) * Global_Scale;
+
+   SelectObject(hdc, Pen_White);
+   SelectObject(hdc, Brush_White);
+   
+   Ellipse(hdc, x, y, x + 3 * Global_Scale, y + 3 * Global_Scale);
 
    
 }
@@ -351,4 +361,13 @@ int On_Key_Down(EKey_Type key_type)
    }
 
    return 0;
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+int On_Timer()
+{
+
+   return 0;
+
 }
