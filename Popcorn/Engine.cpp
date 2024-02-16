@@ -31,6 +31,8 @@ const int Circle_Size = 7;
 const int Platform_Y_Pos = 185;
 const int Platform_Height = 7;
 const int Ball_Size = 3;
+const int Max_X_Pos = Level_X_Offset + Cell_Width * Level_Width - Ball_Size;
+const int Max_Y_Pos = 199 - Ball_Size;
 
 int Inner_Width = 21;
 int Platform_X_Pos = 100;
@@ -386,10 +388,40 @@ int On_Key_Down(EKey_Type key_type)
 
 void Move_Ball()
 {
+   int next_x_pos, next_y_pos;
+
    Prev_Ball_Rect = Ball_Rect;
 
-   Ball_X_Pos += int(Ball_Speed * cos(Ball_Direction) );
-   Ball_Y_Pos -= int(Ball_Speed * sin(Ball_Direction) );
+   next_x_pos = Ball_X_Pos + int(Ball_Speed * cos(Ball_Direction));
+   next_y_pos = Ball_Y_Pos - int(Ball_Speed * sin(Ball_Direction));
+      
+
+   if(next_x_pos < 0)
+   {
+      next_x_pos = -next_x_pos;
+      Ball_Direction = M_PI - Ball_Direction;
+   }
+
+   if(next_y_pos < Level_Y_Offset)
+   {
+      next_y_pos = Level_Y_Offset - (Level_Y_Offset - next_y_pos);
+      Ball_Direction = -Ball_Direction;
+   }
+
+   if (next_x_pos > Max_X_Pos)
+   {
+      next_x_pos = Max_X_Pos - (next_x_pos - Max_X_Pos);
+      Ball_Direction = M_PI - Ball_Direction;
+   }
+
+   if (next_y_pos > Max_Y_Pos)
+   {
+      next_y_pos = Max_Y_Pos - (next_y_pos - Max_Y_Pos);
+      Ball_Direction = -Ball_Direction;
+   }
+
+   Ball_X_Pos = next_x_pos;
+   Ball_Y_Pos = next_y_pos;
 
    Ball_Rect.left = (Level_X_Offset + Ball_X_Pos) * Global_Scale;
    Ball_Rect.top = (Level_Y_Offset + Ball_Y_Pos) * Global_Scale;
