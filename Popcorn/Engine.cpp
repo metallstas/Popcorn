@@ -25,14 +25,16 @@ const int Cell_Width = 16;
 const int Cell_Height = 8;
 const int Level_X_Offset = 8;
 const int Level_Y_Offset = 6;
-const int Level_Width = 14;
-const int Level_Height = 12;
+const int Level_Width = 12;
+const int Level_Height = 14;
 const int Circle_Size = 7;
 const int Platform_Y_Pos = 185;
 const int Platform_Height = 7;
 const int Ball_Size = 3;
-const int Max_X_Pos = Level_X_Offset + Cell_Width * Level_Width - Ball_Size;
+const int Max_X_Pos = Level_X_Offset + Cell_Width * Level_Width;
 const int Max_Y_Pos = 199 - Ball_Size;
+const int Border_X_Offset = 6;
+const int Border_Y_Offset = 4;
 
 int Inner_Width = 21;
 int Platform_X_Pos = 100;
@@ -48,7 +50,7 @@ RECT Platform_Rect, Prev_Platform_Rect;
 RECT Level_Rect;
 RECT Ball_Rect, Prev_Ball_Rect;
 
-char Level_01[Level_Width][Level_Height] =
+char Level_01[Level_Height][Level_Width] =
 {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -271,9 +273,9 @@ void Draw_Level(HDC hdc)
 {//Вывод уровня
    int i, j;
 
-   for (i = 0; i < 14; i++)
+   for (i = 0; i < Level_Height; i++)
    {
-      for (j = 0; j < 12; j++)
+      for (j = 0; j < Level_Width; j++)
       {
          Draw_Brick(hdc, Level_X_Offset + j * Cell_Width, Level_Y_Offset + i * Cell_Height, (EBrick_Type)Level_01[i][j]);
       }
@@ -328,6 +330,61 @@ void Draw_Ball(HDC hdc)
    Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right, Ball_Rect.bottom);
 }
 
+//------------------------------------------------------------------------------------------------------------
+void Draw_Border(HDC hdc, int x, int y, bool top_border)
+{//Рисуем элемент рамки
+
+   //Основная линия рамки
+   SelectObject(hdc, Pen_Blue);
+   SelectObject(hdc, Brush_Blue);
+
+   if(top_border)
+      Rectangle(hdc, x * Global_Scale, (y + 1) * Global_Scale, (4 + x) * Global_Scale, (4 + y) * Global_Scale);
+   else
+      Rectangle(hdc, (1 + x) * Global_Scale, y * Global_Scale, (4 + x) * Global_Scale, (4 + y) * Global_Scale);
+
+   //Белая койма
+   SelectObject(hdc, Pen_White);
+   SelectObject(hdc, Brush_White);
+
+   if(top_border)
+      Rectangle(hdc, x * Global_Scale, y * Global_Scale, (4 + x) * Global_Scale, (1 + y) * Global_Scale);
+   else
+      Rectangle(hdc, (0 + x) * Global_Scale, (0 + y) * Global_Scale, (1 + x) * Global_Scale, (4 + y) * Global_Scale);
+
+   //Черная точка
+
+   SelectObject(hdc, Pen_Black);
+   SelectObject(hdc, Brush_Black);
+
+   if (top_border)
+      Rectangle(hdc, (2 + x) * Global_Scale, (2 + y) * Global_Scale, (3 + x) * Global_Scale, (3 + y) * Global_Scale);
+   else
+      Rectangle(hdc, (2 + x) * Global_Scale, (1 + y) * Global_Scale, (3 + x) * Global_Scale, (2 + y) * Global_Scale);
+
+}
+
+//------------------------------------------------------------------------------------------------------------
+void Draw_Bounds(HDC hdc, RECT paint_area)
+{//Рисуем все элементы рамки
+
+   //Рамка слева
+   for (int i = 0; i < 50; i++)
+   {
+      Draw_Border(hdc, 2, 1 + i * 4, false);
+   }
+   //Рамка справа
+   for (int i = 0; i < 50; i++)
+   {
+      Draw_Border(hdc, 201, 1 + i * 4, false);
+   }
+
+   //Рамка сxверху
+   for (int i = 0; i < 50; i++)
+   {
+      Draw_Border(hdc, 3 + i * 4, 0, true);
+   }
+}
 
 //------------------------------------------------------------------------------------------------------------
 void Draw_Frame(HDC hdc, RECT &paint_area)
@@ -355,7 +412,8 @@ void Draw_Frame(HDC hdc, RECT &paint_area)
    if (IntersectRect(&intersection_rect, &paint_area, &Ball_Rect))
       Draw_Ball(hdc);
 
-   
+   Draw_Bounds(hdc, paint_area);
+
 }
 
 
@@ -369,10 +427,14 @@ int On_Key_Down(EKey_Type key_type)
    {
    case EKT_Left:
       Platform_X_Pos -= Platform_X_Step;
+      if(Platform_X_Pos <= Border_X_Offset)
+         Platform_X_Pos = Border_X_Offset;
       Redraw_Platform( );
       break;
    case EKT_Right:
       Platform_X_Pos += Platform_X_Step;
+      if(Platform_X_Pos >= Max_X_Pos - Platform_Width)
+         Platform_X_Pos = Max_X_Pos - Platform_Width;
       Redraw_Platform();
       break;
    case EKT_Space:
@@ -395,7 +457,7 @@ void Move_Ball()
    next_x_pos = Ball_X_Pos + int(Ball_Speed * cos(Ball_Direction));
    next_y_pos = Ball_Y_Pos - int(Ball_Speed * sin(Ball_Direction));
       
-
+   //Корректируем позицию при отражении
    if(next_x_pos < 0)
    {
       next_x_pos = -next_x_pos;
