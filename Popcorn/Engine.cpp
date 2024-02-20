@@ -433,8 +433,8 @@ int On_Key_Down(EKey_Type key_type)
       break;
    case EKT_Right:
       Platform_X_Pos += Platform_X_Step;
-      if(Platform_X_Pos >= Max_X_Pos - Platform_Width)
-         Platform_X_Pos = Max_X_Pos - Platform_Width;
+      if(Platform_X_Pos >= Max_X_Pos - Platform_Width + 1)
+         Platform_X_Pos = Max_X_Pos - Platform_Width + 1;
       Redraw_Platform();
       break;
    case EKT_Space:
@@ -448,31 +448,57 @@ int On_Key_Down(EKey_Type key_type)
 
 //------------------------------------------------------------------------------------------------------------
 
+void Check_Level_Brick_Hit(int &next_y_pos)
+{
+   //Отражение от кирпичей
+   int brick_y_pos = Level_Y_Offset + Level_Height * Cell_Height;
+
+   for (int i = Level_Height - 1; i >= 0; i--)
+   {
+
+      for (int j = 0; j < Level_Width; j++)
+      {
+         if (Level_01[i][j] == 0)
+            continue;
+         if (next_y_pos < brick_y_pos)
+         {
+            next_y_pos = brick_y_pos - (next_y_pos - brick_y_pos);
+            Ball_Direction = -Ball_Direction;
+         }
+      }
+      brick_y_pos -= Cell_Height;
+   }
+}
+
+//------------------------------------------------------------------------------------------------------------
+
 void Move_Ball()
 {
    int next_x_pos, next_y_pos;
+   int max_x_pos = Max_X_Pos - Ball_Size;
+   int platform_y_pos = Platform_Y_Pos - Ball_Size;
 
    Prev_Ball_Rect = Ball_Rect;
 
    next_x_pos = Ball_X_Pos + int(Ball_Speed * cos(Ball_Direction));
    next_y_pos = Ball_Y_Pos - int(Ball_Speed * sin(Ball_Direction));
       
-   //Корректируем позицию при отражении
-   if(next_x_pos < 0)
+   //Корректируем позицию при отражении от рамки
+   if(next_x_pos < Border_X_Offset)
    {
-      next_x_pos = -next_x_pos;
+      next_x_pos = Level_X_Offset - (next_x_pos - Level_X_Offset);
       Ball_Direction = M_PI - Ball_Direction;
    }
 
-   if(next_y_pos < Level_Y_Offset)
+   if(next_y_pos < Border_Y_Offset)
    {
-      next_y_pos = Level_Y_Offset - (Level_Y_Offset - next_y_pos);
+      next_y_pos = Border_Y_Offset - (next_y_pos - Border_Y_Offset);
       Ball_Direction = -Ball_Direction;
    }
 
-   if (next_x_pos > Max_X_Pos)
+   if (next_x_pos > max_x_pos)
    {
-      next_x_pos = Max_X_Pos - (next_x_pos - Max_X_Pos);
+      next_x_pos = max_x_pos - (next_x_pos - max_x_pos);
       Ball_Direction = M_PI - Ball_Direction;
    }
 
@@ -481,12 +507,24 @@ void Move_Ball()
       next_y_pos = Max_Y_Pos - (next_y_pos - Max_Y_Pos);
       Ball_Direction = -Ball_Direction;
    }
+   //Отражение от платформы
+
+   if (next_y_pos > platform_y_pos)
+   {
+      if (next_x_pos >= Platform_X_Pos && next_x_pos <= Platform_X_Pos + Platform_Width)
+      {
+         next_y_pos = platform_y_pos - (next_y_pos - platform_y_pos);
+         Ball_Direction = -Ball_Direction;
+      }
+   }
+
+   Check_Level_Brick_Hit(next_y_pos);
 
    Ball_X_Pos = next_x_pos;
    Ball_Y_Pos = next_y_pos;
 
-   Ball_Rect.left = (Level_X_Offset + Ball_X_Pos) * Global_Scale;
-   Ball_Rect.top = (Level_Y_Offset + Ball_Y_Pos) * Global_Scale;
+   Ball_Rect.left = Ball_X_Pos * Global_Scale;
+   Ball_Rect.top = Ball_Y_Pos * Global_Scale;
    Ball_Rect.right = Ball_Rect.left + Ball_Size * Global_Scale;
    Ball_Rect.bottom = Ball_Rect.top + Ball_Size * Global_Scale;
 
