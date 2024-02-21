@@ -23,7 +23,7 @@ AsEngine::AsEngine()
    :Inner_Width(21), Platform_X_Pos(100), Platform_X_Step(6), Platform_Width(28), Ball_X_Pos(20), Ball_Y_Pos(180), Ball_Speed(3.0), 
    Ball_Direction(M_PI - M_PI_4)
 {
-   
+   int a;
 }
 
 
