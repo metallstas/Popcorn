@@ -19,9 +19,101 @@ char Level_01[AsEngine::Level_Height][AsEngine::Level_Width] =
 };
 //------------------------------------------------------------------------------------------------------------
 
+ABall::ABall()
+   : Ball_X_Pos(20), Ball_Y_Pos(180), Ball_Speed(3.0), Ball_Direction(M_PI - M_PI_4)
+{
+   
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+void ABall::Draw(HDC hdc, RECT &paint_area, AsEngine *engine)
+{
+   RECT intersection_rect;
+
+   if (! IntersectRect(&intersection_rect, &paint_area, &Ball_Rect))
+      return;
+
+   //Отчищаем фон
+   SelectObject(hdc, engine->Pen_Black);
+   SelectObject(hdc, engine->Brush_Black);
+
+   Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right, Prev_Ball_Rect.bottom);
+   //Рисуем шарик
+   SelectObject(hdc, engine->Pen_White);
+   SelectObject(hdc, engine->Brush_White);
+
+   Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right, Ball_Rect.bottom);
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+void ABall::Move(AsEngine *engine)
+{
+   int next_x_pos, next_y_pos;
+   int max_x_pos = AsEngine::Max_X_Pos - Ball_Size;
+   int platform_y_pos = AsEngine::Platform_Y_Pos - Ball_Size;
+
+   Prev_Ball_Rect = Ball_Rect;
+
+   next_x_pos = Ball_X_Pos + int(Ball_Speed * cos(Ball_Direction));
+   next_y_pos = Ball_Y_Pos - int(Ball_Speed * sin(Ball_Direction));
+
+   //Корректируем позицию при отражении от рамки
+   if(next_x_pos < AsEngine::Border_X_Offset)
+   {
+      next_x_pos = AsEngine::Level_X_Offset - (next_x_pos - AsEngine::Level_X_Offset);
+      Ball_Direction = M_PI - Ball_Direction;
+   }
+
+   if(next_y_pos < AsEngine::Border_Y_Offset)
+   {
+      next_y_pos = AsEngine::Border_Y_Offset - (next_y_pos - AsEngine::Border_Y_Offset);
+      Ball_Direction = -Ball_Direction;
+   }
+
+   if (next_x_pos > max_x_pos)
+   {
+      next_x_pos = max_x_pos - (next_x_pos - max_x_pos);
+      Ball_Direction = M_PI - Ball_Direction;
+   }
+
+   if (next_y_pos > AsEngine::Max_Y_Pos)
+   {
+      next_y_pos = AsEngine::Max_Y_Pos - (next_y_pos - AsEngine::Max_Y_Pos);
+      Ball_Direction = -Ball_Direction;
+   }
+   //Отражение от платформы
+
+   if (next_y_pos > platform_y_pos)
+   {
+      if (next_x_pos >= engine->Platform_X_Pos && next_x_pos <= engine->Platform_X_Pos + engine->Platform_Width)
+      {
+         next_y_pos = platform_y_pos - (next_y_pos - platform_y_pos);
+         Ball_Direction = -Ball_Direction;
+      }
+   }
+
+   engine->Check_Level_Brick_Hit(next_y_pos);
+
+   Ball_X_Pos = next_x_pos;
+   Ball_Y_Pos = next_y_pos;
+
+   Ball_Rect.left = Ball_X_Pos * AsEngine::Global_Scale;
+   Ball_Rect.top = Ball_Y_Pos * AsEngine::Global_Scale;
+   Ball_Rect.right = Ball_Rect.left + Ball_Size * AsEngine::Global_Scale;
+   Ball_Rect.bottom = Ball_Rect.top + Ball_Size * AsEngine::Global_Scale;
+
+   InvalidateRect(engine->Hwnd, &Prev_Ball_Rect, FALSE);
+   InvalidateRect(engine->Hwnd, &Ball_Rect, FALSE);
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+
 AsEngine::AsEngine()
-   :Inner_Width(21), Platform_X_Pos(100), Platform_X_Step(6), Platform_Width(28), Ball_X_Pos(20), Ball_Y_Pos(180), Ball_Speed(3.0), 
-   Ball_Direction(M_PI - M_PI_4)
+   :Inner_Width(21), Platform_X_Pos(100), Platform_X_Step(6), Platform_Width(28)
 {
    
 }
@@ -55,7 +147,7 @@ void AsEngine::Init_Engine(HWND hWnd)
 }
 
 //------------------------------------------------------------------------------------------------------------
-void AsEngine::Draw_Frame(HDC hdc, RECT& paint_area)
+void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)
 {//Отрисовка экрана игры
 
    RECT intersection_rect;
@@ -77,8 +169,7 @@ void AsEngine::Draw_Frame(HDC hdc, RECT& paint_area)
    //   Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 130, EBT_Pink, ELT_O, i);
    //}
 
-   if (IntersectRect(&intersection_rect, &paint_area, &Ball_Rect))
-      Draw_Ball(hdc);
+   Ball.Draw(hdc, paint_area, this);
 
    Draw_Bounds(hdc, paint_area);
 
@@ -120,7 +211,7 @@ int AsEngine::On_Key_Down(EKey_Type key_type)
 int AsEngine::On_Timer()
 {
 
-   Move_Ball();
+   Ball.Move(this);
 
    return 0;
 
@@ -351,21 +442,7 @@ void AsEngine::Draw_Platform(HDC hdc, int x, int y)
 
 
 //------------------------------------------------------------------------------------------------------------
-void AsEngine::Draw_Ball(HDC hdc)
-{
-   //Отчищаем фон
-   SelectObject(hdc, Pen_Black);
-   SelectObject(hdc, Brush_Black);
 
-   Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right, Prev_Ball_Rect.bottom);
-   //Рисуем шарик
-   SelectObject(hdc, Pen_White);
-   SelectObject(hdc, Brush_White);
-
-   Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right, Ball_Rect.bottom);
-}
-
-//------------------------------------------------------------------------------------------------------------
 void AsEngine::Draw_Border(HDC hdc, int x, int y, bool top_border)
 {//Рисуем элемент рамки
 
@@ -440,7 +517,7 @@ void AsEngine::Check_Level_Brick_Hit(int &next_y_pos)
          if (next_y_pos < brick_y_pos)
          {
             next_y_pos = brick_y_pos - (next_y_pos - brick_y_pos);
-            Ball_Direction = -Ball_Direction;
+            Ball.Ball_Direction = -Ball.Ball_Direction;
          }
       }
       brick_y_pos -= Cell_Height;
@@ -449,65 +526,4 @@ void AsEngine::Check_Level_Brick_Hit(int &next_y_pos)
 
 //------------------------------------------------------------------------------------------------------------
 
-void AsEngine::Move_Ball()
-{
-   int next_x_pos, next_y_pos;
-   int max_x_pos = Max_X_Pos - Ball_Size;
-   int platform_y_pos = Platform_Y_Pos - Ball_Size;
-
-   Prev_Ball_Rect = Ball_Rect;
-
-   next_x_pos = Ball_X_Pos + int(Ball_Speed * cos(Ball_Direction));
-   next_y_pos = Ball_Y_Pos - int(Ball_Speed * sin(Ball_Direction));
-      
-   //Корректируем позицию при отражении от рамки
-   if(next_x_pos < Border_X_Offset)
-   {
-      next_x_pos = Level_X_Offset - (next_x_pos - Level_X_Offset);
-      Ball_Direction = M_PI - Ball_Direction;
-   }
-
-   if(next_y_pos < Border_Y_Offset)
-   {
-      next_y_pos = Border_Y_Offset - (next_y_pos - Border_Y_Offset);
-      Ball_Direction = -Ball_Direction;
-   }
-
-   if (next_x_pos > max_x_pos)
-   {
-      next_x_pos = max_x_pos - (next_x_pos - max_x_pos);
-      Ball_Direction = M_PI - Ball_Direction;
-   }
-
-   if (next_y_pos > Max_Y_Pos)
-   {
-      next_y_pos = Max_Y_Pos - (next_y_pos - Max_Y_Pos);
-      Ball_Direction = -Ball_Direction;
-   }
-   //Отражение от платформы
-
-   if (next_y_pos > platform_y_pos)
-   {
-      if (next_x_pos >= Platform_X_Pos && next_x_pos <= Platform_X_Pos + Platform_Width)
-      {
-         next_y_pos = platform_y_pos - (next_y_pos - platform_y_pos);
-         Ball_Direction = -Ball_Direction;
-      }
-   }
-
-   Check_Level_Brick_Hit(next_y_pos);
-
-   Ball_X_Pos = next_x_pos;
-   Ball_Y_Pos = next_y_pos;
-
-   Ball_Rect.left = Ball_X_Pos * Global_Scale;
-   Ball_Rect.top = Ball_Y_Pos * Global_Scale;
-   Ball_Rect.right = Ball_Rect.left + Ball_Size * Global_Scale;
-   Ball_Rect.bottom = Ball_Rect.top + Ball_Size * Global_Scale;
-
-   InvalidateRect(Hwnd, &Prev_Ball_Rect, FALSE);
-   InvalidateRect(Hwnd, &Ball_Rect, FALSE);
-}
-
-//------------------------------------------------------------------------------------------------------------
 
