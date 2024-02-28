@@ -120,6 +120,21 @@ private:
 };
 
 
+class AsBorder
+{
+public:
+   void Init();
+
+   static const int Border_X_Offset = 6;
+   static const int Border_Y_Offset = 4;
+
+   void Draw_Bounds(HDC hdc, RECT paint_area, AsEngine *engine);
+
+private:
+   void Draw_Border(HDC hdc, int x, int y, bool top_border, AsEngine *engine);
+};
+
+
 class AsEngine
 {
 public:
@@ -132,8 +147,7 @@ public:
 
    static const int Global_Scale = 3;
 
-   static const int Border_X_Offset = 6;
-   static const int Border_Y_Offset = 4;
+
    static const int Max_X_Pos = ALevel::Level_X_Offset + ALevel::Cell_Width * ALevel::Level_Width;
    static const int Max_Y_Pos = 199 - ABall::Ball_Size;
 
@@ -150,8 +164,6 @@ private:
    ABall Ball;
    ALevel Level;
    AsPlatform Platform;
+   AsBorder Border;
    
-   void Draw_Border(HDC hdc, int x, int y, bool top_border);
-   void Draw_Bounds(HDC hdc, RECT paint_area);
-
 };

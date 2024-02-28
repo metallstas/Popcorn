@@ -67,15 +67,15 @@ void ABall::Move(ALevel *level, AsPlatform *platform, AsEngine *engine)
    next_y_pos = Ball_Y_Pos - int(Ball_Speed * sin(Ball_Direction));
 
    //Корректируем позицию при отражении от рамки
-   if(next_x_pos < AsEngine::Border_X_Offset)
+   if(next_x_pos < AsBorder::Border_X_Offset)
    {
       next_x_pos = ALevel::Level_X_Offset - (next_x_pos - ALevel::Level_X_Offset);
       Ball_Direction = M_PI - Ball_Direction;
    }
 
-   if(next_y_pos < AsEngine::Border_Y_Offset)
+   if(next_y_pos < AsBorder::Border_Y_Offset)
    {
-      next_y_pos = AsEngine::Border_Y_Offset - (next_y_pos - AsEngine::Border_Y_Offset);
+      next_y_pos = AsBorder::Border_Y_Offset - (next_y_pos - AsBorder::Border_Y_Offset);
       Ball_Direction = -Ball_Direction;
    }
 
@@ -140,7 +140,7 @@ ALevel::ALevel()
 //------------------------------------------------------------------------------------------------------------
 
 AsPlatform::AsPlatform()
-  :X_Pos(AsEngine::Border_X_Offset), X_Step(AsEngine::Global_Scale * 2), Width(28),Inner_Width(21)
+  :X_Pos(AsBorder::Border_X_Offset), X_Step(AsEngine::Global_Scale * 2), Width(28),Inner_Width(21)
 {
 
 }
@@ -150,6 +150,13 @@ void AsPlatform::Init()
    AsEngine::Create_Pen_Brush(255, 255, 255, Pen_White, Brush_White);
    AsEngine::Create_Pen_Brush(255, 85, 255, Pen_Pink, Brush_Pink);
    AsEngine::Create_Pen_Brush(0, 0, 0, Pen_Black, Brush_Black);
+}
+
+
+void AsBorder::Init()
+{
+
+   
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -204,7 +211,7 @@ void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)
 
    Ball.Draw(hdc, paint_area, this);
 
-   Draw_Bounds(hdc, paint_area);
+   Border.Draw_Bounds(hdc, paint_area, this);
 
 }
 
@@ -219,8 +226,8 @@ int AsEngine::On_Key_Down(EKey_Type key_type)
    {
    case EKT_Left:
       Platform.X_Pos -= Platform.X_Step;
-      if (Platform.X_Pos <= Border_X_Offset)
-         Platform.X_Pos = Border_X_Offset;
+      if (Platform.X_Pos <= AsBorder::Border_X_Offset)
+         Platform.X_Pos = AsBorder::Border_X_Offset;
       Platform.Redraw_Platform(this);
       break;
    case EKT_Right:
@@ -486,58 +493,59 @@ void AsPlatform::Draw_Platform(HDC hdc, RECT &paint_area)
 
 //------------------------------------------------------------------------------------------------------------
 
-void AsEngine::Draw_Border(HDC hdc, int x, int y, bool top_border)
+void AsBorder::Draw_Border(HDC hdc, int x, int y, bool top_border, AsEngine *engine)
 {//Рисуем элемент рамки
 
+   int global_scale = AsEngine::Global_Scale;
    //Основная линия рамки
-   SelectObject(hdc, Pen_Blue);
-   SelectObject(hdc, Brush_Blue);
+   SelectObject(hdc, engine->Pen_Blue);
+   SelectObject(hdc, engine->Brush_Blue);
 
    if(top_border)
-      Rectangle(hdc, x * Global_Scale, (y + 1) * Global_Scale, (4 + x) * Global_Scale, (4 + y) * Global_Scale);
+      Rectangle(hdc, x * global_scale, (y + 1) * global_scale, (4 + x) * global_scale, (4 + y) * global_scale);
    else
-      Rectangle(hdc, (1 + x) * Global_Scale, y * Global_Scale, (4 + x) * Global_Scale, (4 + y) * Global_Scale);
+      Rectangle(hdc, (1 + x) * global_scale, y * global_scale, (4 + x) * global_scale, (4 + y) * global_scale);
 
    //Белая койма
-   SelectObject(hdc, Pen_White);
-   SelectObject(hdc, Brush_White);
+   SelectObject(hdc, engine->Pen_White);
+   SelectObject(hdc, engine->Brush_White);
 
    if(top_border)
-      Rectangle(hdc, x * Global_Scale, y * Global_Scale, (4 + x) * Global_Scale, (1 + y) * Global_Scale);
+      Rectangle(hdc, x * global_scale, y * global_scale, (4 + x) * global_scale, (1 + y) * global_scale);
    else
-      Rectangle(hdc, (0 + x) * Global_Scale, (0 + y) * Global_Scale, (1 + x) * Global_Scale, (4 + y) * Global_Scale);
+      Rectangle(hdc, (0 + x) * global_scale, (0 + y) * global_scale, (1 + x) * global_scale, (4 + y) * global_scale);
 
    //Черная точка
 
-   SelectObject(hdc, Pen_Black);
-   SelectObject(hdc, Brush_Black);
+   SelectObject(hdc, engine->Pen_Black);
+   SelectObject(hdc, engine->Brush_Black);
    
    if (top_border)
-      Rectangle(hdc, (2 + x) * Global_Scale, (2 + y) * Global_Scale, (3 + x) * Global_Scale, (3 + y) * Global_Scale);
+      Rectangle(hdc, (2 + x) * global_scale, (2 + y) * global_scale, (3 + x) * global_scale, (3 + y) * global_scale);
    else
-      Rectangle(hdc, (2 + x) * Global_Scale, (1 + y) * Global_Scale, (3 + x) * Global_Scale, (2 + y) * Global_Scale);
+      Rectangle(hdc, (2 + x) * global_scale, (1 + y) * global_scale, (3 + x) * global_scale, (2 + y) * global_scale);
 
 }
 
 //------------------------------------------------------------------------------------------------------------
-void AsEngine::Draw_Bounds(HDC hdc, RECT paint_area)
+void AsBorder::Draw_Bounds(HDC hdc, RECT paint_area, AsEngine *engine)
 {//Рисуем все элементы рамки
 
    //Рамка слева
    for (int i = 0; i < 50; i++)
    {
-      Draw_Border(hdc, 2, 1 + i * 4, false);
+      Draw_Border(hdc, 2, 1 + i * 4, false, engine);
    }
    //Рамка справа
    for (int i = 0; i < 50; i++)
    {
-      Draw_Border(hdc, 201, 1 + i * 4, false);
+      Draw_Border(hdc, 201, 1 + i * 4, false, engine);
    }
 
    //Рамка сxверху
    for (int i = 0; i < 50; i++)
    {
-      Draw_Border(hdc, 3 + i * 4, 0, true);
+      Draw_Border(hdc, 3 + i * 4, 0, true, engine);
    }
 }
 
