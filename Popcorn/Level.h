@@ -21,12 +21,8 @@ class ALevel
 public:
    ALevel();
 
-   static const int Level_X_Offset = 8;
    static const int Level_Y_Offset = 6;
-   static const int Cell_Width = 16;
    static const int Cell_Height = 8;
-   static const int Level_Width = 12;
-   static const int Level_Height = 14;
 
    void Init();
    void Check_Level_Brick_Hit(int &next_y_pos, double &ball_direction);

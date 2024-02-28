@@ -1,6 +1,6 @@
 #include "Level.h"
 
-char Level_01[ALevel::Level_Height][ALevel::Level_Width] =
+char Level_01[AsConfig::Level_Height][AsConfig::Level_Width] =
 {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -34,9 +34,9 @@ void ALevel::Init()
 
 	Letter_Pen = CreatePen(PS_SOLID, 3, RGB(255, 255, 255));
 
-	Level_Rect.left = Level_X_Offset * AsConfig::Global_Scale;
-	Level_Rect.right = Level_Rect.left * Cell_Width * Level_Width * AsConfig::Global_Scale;
-	Level_Rect.bottom = Level_Rect.top * Cell_Height * Level_Height * AsConfig::Global_Scale;
+	Level_Rect.left = AsConfig::Level_X_Offset * AsConfig::Global_Scale;
+	Level_Rect.right = Level_Rect.left * AsConfig::Cell_Width * AsConfig::Level_Width * AsConfig::Global_Scale;
+	Level_Rect.bottom = Level_Rect.top * Cell_Height * AsConfig::Level_Height * AsConfig::Global_Scale;
 	Level_Rect.top = Level_Y_Offset * AsConfig::Global_Scale;
 }
 
@@ -198,11 +198,11 @@ void ALevel::Draw(HDC hdc, RECT &paint_area)
    if(IntersectRect(&intersection_rect, &paint_area, &Level_Rect))
       return;
 
-   for (i = 0; i < Level_Height; i++)
+   for (i = 0; i < AsConfig::Level_Height; i++)
    {
-      for (j = 0; j < Level_Width; j++)
+      for (j = 0; j < AsConfig::Level_Width; j++)
       {
-         Draw_Brick(hdc, Level_X_Offset + j * Cell_Width, Level_Y_Offset + i * Cell_Height, (EBrick_Type)Level_01[i][j] );
+         Draw_Brick(hdc, AsConfig::Level_X_Offset + j * AsConfig::Cell_Width, Level_Y_Offset + i * Cell_Height, (EBrick_Type)Level_01[i][j] );
       }
    }
 }
@@ -210,12 +210,12 @@ void ALevel::Draw(HDC hdc, RECT &paint_area)
 void ALevel::Check_Level_Brick_Hit(int &next_y_pos, double &ball_direction)
 {
    //Отражение от кирпичей
-   int brick_y_pos = Level_Y_Offset + Level_Height * Cell_Height;
+   int brick_y_pos = Level_Y_Offset + AsConfig::Level_Height * Cell_Height;
 
-   for (int i = Level_Height - 1; i >= 0; i--)
+   for (int i = AsConfig::Level_Height - 1; i >= 0; i--)
    {
 
-      for (int j = 0; j < Level_Width; j++)
+      for (int j = 0; j < AsConfig::Level_Width; j++)
       {
          if (Level_01[i][j] == 0)
             continue;

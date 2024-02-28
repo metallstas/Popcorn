@@ -1,11 +1,8 @@
 #pragma once
 
-#include <Windows.h>
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include "Ball.h"
 #include "Border.h"
 #include "Level.h"
-#include "Config.h"
 
 enum EKey_Type
 {
@@ -18,36 +15,7 @@ enum EKey_Type
 
 const int Timer_ID = WM_USER + 1;
 
-class AsEngine;
-class ALevel;
-class AsPlatform;
-
-class ABall
-{
-public:
-   ABall();
-
-   HPEN Ball_Pen_White;
-   HBRUSH Ball_Brush_White;
-
-   static const int Ball_Size = 3;
-
-   double Ball_Direction;
-
-   void Init();
-   void Draw(HDC hdc, RECT &paint_area, AsEngine *engine);
-   void Move(ALevel *level, AsPlatform *platform, AsEngine *engine);
-
-private:
-   RECT Ball_Rect, Prev_Ball_Rect;
-
-   double Ball_Speed;
-
-   int Ball_X_Pos;
-   int Ball_Y_Pos;
-
-};
-
+class AsEngine; 
 
 class AsPlatform
 {
@@ -62,8 +30,6 @@ public:
    int X_Step;
    int Width;
    int X_Pos;
-
-   static const int Y_Pos = 185;
 
 private:
    HPEN Pen_Pink, Pen_Blue, Pen_Black, Pen_White;
@@ -88,11 +54,8 @@ public:
 
    HWND Hwnd;
 
-   HPEN BG_Pen_Black;
-   HBRUSH BG_Brush_Black;
-
-   static const int Max_X_Pos = ALevel::Level_X_Offset + ALevel::Cell_Width * ALevel::Level_Width;
-   static const int Max_Y_Pos = 199 - ABall::Ball_Size;
+   HPEN BG_Pen;
+   HBRUSH BG_Brush;
 
    void Init_Engine(HWND hWnd); 
    void Draw_Frame(HDC hdc, RECT &paint_area);

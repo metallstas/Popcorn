@@ -12,9 +12,6 @@ public:
    AsBorder();
    void Init();
 
-   static const int Border_X_Offset = 6;
-   static const int Border_Y_Offset = 4;
-
    void Draw(HDC hdc, RECT &paint_area, HPEN &bg_pen, HBRUSH &bg_brush);
 
 private:
