@@ -25,6 +25,9 @@
     <Filter Include="Config">
       <UniqueIdentifier>{4c24cc1f-12d6-4e5c-b5e6-709f09a82a2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Level">
+      <UniqueIdentifier>{3319b05e-f5d3-4f22-a43f-8f70c34e5d55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -47,6 +50,9 @@
     </ClInclude>
     <ClInclude Include="Config.h">
       <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Level</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +80,9 @@
     </ClCompile>
     <ClCompile Include="Config.cpp">
       <Filter>Config</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Level</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
