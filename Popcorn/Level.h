@@ -34,6 +34,8 @@ private:
    HBRUSH Level_Brush_Pink, Level_Brush_Blue;
    RECT Level_Rect;
 
+   static char Level_01[AsConfig::Level_Height][AsConfig::Level_Width];
+
    static const int Brick_Width = 15;
    static const int Brick_Height = 7;
 
