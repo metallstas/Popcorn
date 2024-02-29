@@ -1,4 +1,4 @@
-#include "Border.h"
+п»ї#include "Border.h"
 
 AsBorder::AsBorder()
    :Border_Pen_Blue(0), Border_Pen_White(0), Border_Brush_Blue (0), Border_Brush_White(0)
@@ -14,10 +14,10 @@ void AsBorder::Init()
 }
 
 void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border, HPEN pen_black, HBRUSH brush_black)
-{//Рисуем элемент рамки
+{//Р РёСЃСѓРµРј СЌР»РµРјРµРЅС‚ СЂР°РјРєРё
 
    int global_scale = AsConfig::Global_Scale;
-   //Основная линия рамки
+   //РћСЃРЅРѕРІРЅР°СЏ Р»РёРЅРёСЏ СЂР°РјРєРё
    SelectObject(hdc, Border_Pen_Blue);
    SelectObject(hdc, Border_Brush_Blue);
 
@@ -26,7 +26,7 @@ void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border, HPEN pen_bla
    else
       Rectangle(hdc, (1 + x) * global_scale, y * global_scale, (4 + x) * global_scale, (4 + y) * global_scale);
 
-   //Белая койма
+   //Р‘РµР»Р°СЏ РєРѕР№РјР°
    SelectObject(hdc, Border_Pen_White);
    SelectObject(hdc, Border_Brush_White);
 
@@ -35,7 +35,7 @@ void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border, HPEN pen_bla
    else
       Rectangle(hdc, (0 + x) * global_scale, (0 + y) * global_scale, (1 + x) * global_scale, (4 + y) * global_scale);
 
-   //Черная точка
+   //Р§РµСЂРЅР°СЏ С‚РѕС‡РєР°
 
    SelectObject(hdc, pen_black);
    SelectObject(hdc, brush_black);
@@ -49,20 +49,20 @@ void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border, HPEN pen_bla
 
 
 void AsBorder::Draw(HDC hdc, RECT &paint_area, HPEN &pen_black, HBRUSH &brush_black)
-{//Рисуем все элементы рамки
+{//Р РёСЃСѓРµРј РІСЃРµ СЌР»РµРјРµРЅС‚С‹ СЂР°РјРєРё
 
- //Рамка слева
+ //Р Р°РјРєР° СЃР»РµРІР°
    for (int i = 0; i < 50; i++)
    {
       Draw_Element(hdc, 2, 1 + i * 4, false, pen_black, brush_black);
    }
-   //Рамка справа
+   //Р Р°РјРєР° СЃРїСЂР°РІР°
    for (int i = 0; i < 50; i++)
    {
       Draw_Element(hdc, 201, 1 + i * 4, false, pen_black, brush_black);
    }
 
-   //Рамка сxверху
+   //Р Р°РјРєР° СЃxРІРµСЂС…Сѓ
    for (int i = 0; i < 50; i++)
    {
       Draw_Element(hdc, 3 + i * 4, 0, true, pen_black, brush_black);

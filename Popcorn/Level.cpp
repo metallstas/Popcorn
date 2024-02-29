@@ -1,4 +1,4 @@
-#include "Level.h"
+ï»¿#include "Level.h"
 
 char Level_01[AsConfig::Level_Height][AsConfig::Level_Width] =
 {
@@ -92,10 +92,10 @@ void ALevel::Set_Brick_Letter_Color(bool is_switch_color, HPEN &front_pen, HPEN 
 //------------------------------------------------------------------------------------------------------------
 
 void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, ELetter_Type letter_type, int rotation_step)
-{//Âûâîä ïàäàþùåé áóêâû
+{//Ð’Ñ‹Ð²Ð¾Ð´ Ð¿Ð°Ð´Ð°ÑŽÑ‰ÐµÐ¹ Ð±ÑƒÐºÐ²Ñ‹
    bool swith_color;
    double offset;
-   double rotation_angle; //ïðåîáðàçîâàíèå øàãà â óãîë ïîâîðîòà
+   double rotation_angle; //Ð¿Ñ€ÐµÐ¾Ð±Ñ€Ð°Ð·Ð¾Ð²Ð°Ð½Ð¸Ðµ ÑˆÐ°Ð³Ð° Ð² ÑƒÐ³Ð¾Ð» Ð¿Ð¾Ð²Ð¾Ñ€Ð¾Ñ‚Ð°
    int brick_half_height = Brick_Height * AsConfig::Global_Scale / 2;
    int offset_back_part;
    HPEN front_pen, back_pen;
@@ -135,13 +135,13 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, EL
 
    if (rotation_step == 4 || rotation_step == 12)
    {
-      //Ôîí
+      //Ð¤Ð¾Ð½
       SelectObject(hdc, back_pen);
       SelectObject(hdc, back_brush);
 
       Rectangle(hdc, x, y + brick_half_height - AsConfig::Global_Scale, x + Brick_Width * AsConfig::Global_Scale, y + brick_half_height);
 
-      //Ïåðåäíèé ïëàí
+      //ÐŸÐµÑ€ÐµÐ´Ð½Ð¸Ð¹ Ð¿Ð»Ð°Ð½
       SelectObject(hdc, front_pen);
       SelectObject(hdc, front_brush);
 
@@ -161,7 +161,7 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, EL
       GetWorldTransform(hdc, &old_xform);
       SetWorldTransform(hdc, &xform);
 
-      //Ôîí
+      //Ð¤Ð¾Ð½
       SelectObject(hdc, back_pen);
       SelectObject(hdc, back_brush);
 
@@ -169,7 +169,7 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, EL
       offset_back_part = (int)round(offset);
 
       Rectangle(hdc, 0, 0 - brick_half_height - offset_back_part, Brick_Width * AsConfig::Global_Scale, brick_half_height - (int)offset);
-      //Ïåðåäíèé ïëàí
+      //ÐŸÐµÑ€ÐµÐ´Ð½Ð¸Ð¹ Ð¿Ð»Ð°Ð½
       SelectObject(hdc, front_pen);
       SelectObject(hdc, front_brush);
 
@@ -191,7 +191,7 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, EL
 //------------------------------------------------------------------------------------------------------------
 
 void ALevel::Draw(HDC hdc, RECT &paint_area)
-{//Âûâîä óðîâíÿ
+{//Ð’Ñ‹Ð²Ð¾Ð´ ÑƒÑ€Ð¾Ð²Ð½Ñ
    int i, j;
    RECT intersection_rect;
 
@@ -209,7 +209,7 @@ void ALevel::Draw(HDC hdc, RECT &paint_area)
 
 void ALevel::Check_Level_Brick_Hit(int &next_y_pos, double &ball_direction)
 {
-   //Îòðàæåíèå îò êèðïè÷åé
+   //ÐžÑ‚Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ Ð¾Ñ‚ ÐºÐ¸Ñ€Ð¿Ð¸Ñ‡ÐµÐ¹
    int brick_y_pos = Level_Y_Offset + AsConfig::Level_Height * Cell_Height;
 
    for (int i = AsConfig::Level_Height - 1; i >= 0; i--)

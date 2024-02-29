@@ -1,4 +1,4 @@
-#include "Config.h"
+﻿#include "Config.h"
 
 void AsConfig::Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char b, HPEN &pen, HBRUSH &brush)
 {

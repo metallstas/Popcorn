@@ -1,4 +1,4 @@
-#include "Ball.h"
+п»ї#include "Ball.h"
 
 ABall::ABall()
    : Ball_Rect{}, Prev_Ball_Rect{}, Ball_Pen_White(0), Ball_Brush_White(0), Ball_X_Pos(20), Ball_Y_Pos(180), Ball_Speed(3.0), Ball_Direction(M_PI - M_PI_4)
@@ -21,12 +21,12 @@ void ABall::Draw(HDC hdc, RECT &paint_area, HPEN &bg_pen, HBRUSH &bg_brush)
    //if (!IntersectRect(&intersection_rect, &paint_area, &Ball_Rect))
    //   return;
 
-   //Отчищаем фон
+   //РћС‚С‡РёС‰Р°РµРј С„РѕРЅ
    SelectObject(hdc, bg_pen);
    SelectObject(hdc, bg_brush);
 
    Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right, Prev_Ball_Rect.bottom);
-   //Рисуем шарик
+   //Р РёСЃСѓРµРј С€Р°СЂРёРє
    SelectObject(hdc, Ball_Pen_White);
    SelectObject(hdc, Ball_Brush_White);
 
@@ -46,7 +46,7 @@ void ABall::Move(HWND hwnd,  int platform_x_pos, int platform_width, ALevel *lev
    next_x_pos = Ball_X_Pos + int(Ball_Speed * cos(Ball_Direction));
    next_y_pos = Ball_Y_Pos - int(Ball_Speed * sin(Ball_Direction));
 
-   //Корректируем позицию при отражении от рамки
+   //РљРѕСЂСЂРµРєС‚РёСЂСѓРµРј РїРѕР·РёС†РёСЋ РїСЂРё РѕС‚СЂР°Р¶РµРЅРёРё РѕС‚ СЂР°РјРєРё
    if(next_x_pos < AsConfig::Border_X_Offset)
    {
       next_x_pos = AsConfig::Level_X_Offset - (next_x_pos - AsConfig::Level_X_Offset);
@@ -70,7 +70,7 @@ void ABall::Move(HWND hwnd,  int platform_x_pos, int platform_width, ALevel *lev
       next_y_pos = AsConfig::Max_Y_Pos - (next_y_pos - AsConfig::Max_Y_Pos);
       Ball_Direction = -Ball_Direction;
    }
-   //Отражение от платформы
+   //РћС‚СЂР°Р¶РµРЅРёРµ РѕС‚ РїР»Р°С‚С„РѕСЂРјС‹
 
    if (next_y_pos > platform_y_pos)
    {

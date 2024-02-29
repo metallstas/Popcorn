@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Windows.h"
 #define _USE_MATH_DEFINES
