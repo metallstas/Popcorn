@@ -2,6 +2,7 @@
 
 #include "Windows.h"
 #include "Config.h"
+#include "Active_Brick.h"
 
 enum EBrick_Type
 {
@@ -21,8 +22,7 @@ class ALevel
 public:
    ALevel();
 
-   static const int Level_Y_Offset = 6;
-   static const int Cell_Height = 8;
+   AActive_Brick Active_Brick;
 
    void Init();
    void Check_Level_Brick_Hit(int &next_y_pos, double &ball_direction);
@@ -35,9 +35,6 @@ private:
    RECT Level_Rect;
 
    static char Level_01[AsConfig::Level_Height][AsConfig::Level_Width];
-
-   static const int Brick_Width = 15;
-   static const int Brick_Height = 7;
 
    void Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type);
    void Set_Brick_Letter_Color(bool is_switch_color, HPEN &front_pen, HPEN &back_pen, HBRUSH &front_brush, HBRUSH &back_brush);

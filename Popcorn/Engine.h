@@ -12,10 +12,7 @@ enum EKey_Type
    EKT_Space
 };
 
-
-
 const int Timer_ID = WM_USER + 1;
-
 
 class AsEngine
 {
@@ -28,7 +25,6 @@ public:
    int On_Timer();
 
 private:
-
    HWND Hwnd;
 
    HPEN BG_Pen;
@@ -38,5 +34,5 @@ private:
    ALevel Level;
    AsPlatform Platform;
    AsBorder Border;
-   
+  
 };
