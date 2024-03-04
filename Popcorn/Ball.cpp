@@ -10,7 +10,7 @@ ABall::ABall()
 
 void ABall::Init()
 {
-   AsConfig::Create_Pen_Brush(255, 255, 255, Ball_Pen_White, Ball_Brush_White);
+   AsConfig::Create_Pen_Brush(AsConfig::Ball_Color, Ball_Pen_White, Ball_Brush_White);
 }
 
 

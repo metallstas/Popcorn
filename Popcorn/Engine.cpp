@@ -12,8 +12,9 @@ void AsEngine::Init_Engine(HWND hWnd)
 
    Hwnd = hWnd;
 
-   AsConfig::Create_Pen_Brush(0, 0, 0, BG_Pen, BG_Brush);
+   AsConfig::Create_Pen_Brush(AsConfig::BG_Color, BG_Pen, BG_Brush);
 
+   AActive_Brick::Setup_Colors();
    Level.Init();
    Ball.Init();
    Platform.Init();

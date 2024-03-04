@@ -1,15 +1,8 @@
 ﻿#pragma once
 
-#include "Windows.h"
 #include "Config.h"
 #include "Active_Brick.h"
 
-enum EBrick_Type
-{
-   EBT_None,
-   EBT_Pink,
-   EBT_Blue
-};
 
 enum ELetter_Type
 {
