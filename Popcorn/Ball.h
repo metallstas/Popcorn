@@ -11,7 +11,7 @@ public:
    double Ball_Direction;
 
    void Init();
-   void Draw(HDC hdc, RECT &paint_area, HPEN &bg_pen, HBRUSH &bg_brush);
+   void Draw(HDC hdc, RECT &paint_area);
    void Move(HWND hwnd, int platform_x_pos, int platform_width, ALevel *level);
 
 private:

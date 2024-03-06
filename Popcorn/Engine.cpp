@@ -1,7 +1,7 @@
 ﻿#include "Engine.h"
 
 AsEngine::AsEngine()
-   :Hwnd(0), BG_Pen(0), BG_Brush(0) 
+   :Hwnd(0)
 {
    
 }
@@ -11,9 +11,7 @@ void AsEngine::Init_Engine(HWND hWnd)
 {//Настройка игры при старте
 
    Hwnd = hWnd;
-
-   AsConfig::Create_Pen_Brush(AsConfig::BG_Color, BG_Pen, BG_Brush);
-
+      
    AActive_Brick::Setup_Colors();
    Level.Init();
    Ball.Init();
@@ -39,9 +37,9 @@ void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)
    //   Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 130, EBT_Pink, ELT_O, i);
    //}
 
-   Ball.Draw(hdc, paint_area, BG_Pen, BG_Brush);
+   Ball.Draw(hdc, paint_area);
 
-   Border.Draw(hdc, paint_area, BG_Pen, BG_Brush);
+   Border.Draw(hdc, paint_area);
 
 }
 
@@ -79,7 +77,6 @@ int AsEngine::On_Timer()
    Ball.Move(Hwnd, Platform.X_Pos, Platform.Width, &Level);
 
    Level.Active_Brick.Act(Hwnd);
-
 
    return 0;
 

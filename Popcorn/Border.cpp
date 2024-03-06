@@ -13,7 +13,7 @@ void AsBorder::Init()
 
 }
 
-void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border, HPEN pen_black, HBRUSH brush_black)
+void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border)
 {//Рисуем элемент рамки
 
    int global_scale = AsConfig::Global_Scale;
@@ -37,8 +37,8 @@ void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border, HPEN pen_bla
 
    //Черная точка
 
-   SelectObject(hdc, pen_black);
-   SelectObject(hdc, brush_black);
+   SelectObject(hdc, AsConfig::BG_Pen);
+   SelectObject(hdc, AsConfig::BG_Brush);
 
    if (top_border)
       Rectangle(hdc, (2 + x) * global_scale, (2 + y) * global_scale, (3 + x) * global_scale, (3 + y) * global_scale);
@@ -48,23 +48,23 @@ void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border, HPEN pen_bla
 }
 
 
-void AsBorder::Draw(HDC hdc, RECT &paint_area, HPEN &pen_black, HBRUSH &brush_black)
+void AsBorder::Draw(HDC hdc, RECT &paint_area)
 {//Рисуем все элементы рамки
 
  //Рамка слева
    for (int i = 0; i < 50; i++)
    {
-      Draw_Element(hdc, 2, 1 + i * 4, false, pen_black, brush_black);
+      Draw_Element(hdc, 2, 1 + i * 4, false);
    }
    //Рамка справа
    for (int i = 0; i < 50; i++)
    {
-      Draw_Element(hdc, 201, 1 + i * 4, false, pen_black, brush_black);
+      Draw_Element(hdc, 201, 1 + i * 4, false);
    }
 
    //Рамка сxверху
    for (int i = 0; i < 50; i++)
    {
-      Draw_Element(hdc, 3 + i * 4, 0, true, pen_black, brush_black);
+      Draw_Element(hdc, 3 + i * 4, 0, true);
    }
 }
