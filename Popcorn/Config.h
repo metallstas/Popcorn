@@ -29,7 +29,7 @@ public:
    static const int Border_Y_Offset = 4;
    static const int Platform_Y_Pos = 185;
    static const int Level_X_Offset = 8;
-   static const int Max_Y_Pos = 199 - Ball_Size;
+   static const int Max_Y_Pos = 199;
    static const int Cell_Width = 16;
    static const int Level_Width = 12;
    static const int Level_Height = 14;
