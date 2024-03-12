@@ -38,9 +38,11 @@ public:
    static const int Brick_Height = 7;
    static const int Level_Y_Offset = 6;
    static const int Cell_Height = 8;
+   static const int Meltdown_Speed = 4;
 
    static void Setup_Colors();
    static void Create_Pen_Brush(const AColor &color, HPEN &pen, HBRUSH &brush);
    static void Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char b, HPEN &pen, HBRUSH &brush);
+   static int Rand(int range);
 
 };

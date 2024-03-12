@@ -102,7 +102,7 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area)
    for (i = 0; i < area_width; i++)
    {
       x = Platform_Rect.left + i;
-      y_offset = 2;
+      y_offset = AsConfig::Rand(AsConfig::Meltdown_Speed);
 
       for (j = 0; j < area_height; j++)
       {
@@ -119,7 +119,7 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area)
          SetPixel(hdc, x, y, bg_pixel);
       }
    }  
-   Meltdown_Y_Pos += 2;
+   ++Meltdown_Y_Pos;
 }
 
 void AsPlatform::Draw(HDC hdc, RECT &paint_area)
