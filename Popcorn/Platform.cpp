@@ -1,7 +1,7 @@
 ﻿#include "Platform.h"
 
 AsPlatform::AsPlatform()
-   :X_Pos(AsConfig::Border_X_Offset), Meltdown_Y_Pos(0), X_Step(AsConfig::Global_Scale * 2), Platform_State(EPS_Normal), Width(28), Inner_Width(21), Pen_Pink(0), Pen_Blue(0), Brush_Pink(0),
+   :X_Pos(AsConfig::Border_X_Offset), Meltdown_Platform_Y_Pos{}, X_Step(AsConfig::Global_Scale * 2), Platform_State(EPS_Normal), Width(Normal_Width), Inner_Width(21), Pen_Pink(0), Pen_Blue(0), Brush_Pink(0),
    Brush_Blue(0), Pen_Black(0), Brush_Black(0), Brush_White(0), Pen_White(0), Platform_Rect{}, Prev_Platform_Rect{}
 {
    X_Pos = (AsConfig::Max_X_Pos - Width) / 2;
@@ -18,8 +18,15 @@ void AsPlatform::Act(HWND hwnd)
 {
    if(Platform_State != EPS_Meltdown)
    {
+      int length = sizeof(Meltdown_Platform_Y_Pos) / sizeof(Meltdown_Platform_Y_Pos[0]);
+
       Platform_State = EPS_Meltdown;
-      Meltdown_Y_Pos = Platform_Rect.bottom;
+
+      for (int i = 0; i < length; i++)
+      {
+         Meltdown_Platform_Y_Pos[i] = Platform_Rect.bottom;
+      }
+      
    }
 
    if(Platform_State == EPS_Meltdown)
@@ -40,7 +47,7 @@ void AsPlatform::Redraw(HWND hwnd)
 
    if(Platform_State == EPS_Meltdown)
    {
-      Platform_Rect.bottom = AsConfig::Max_Y_Pos * AsConfig::Global_Scale;
+      Platform_Rect.bottom = (AsConfig::Max_Y_Pos + 1) * AsConfig::Global_Scale;
    }
 
    InvalidateRect(hwnd, &Prev_Platform_Rect, FALSE);
@@ -90,11 +97,15 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area)
 
 void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area)
 {
+   RECT intersection_rect;
    int i, j;
    int area_width, area_height;
    int x, y, y_offset;
    COLORREF pixel;
    COLORREF bg_pixel = RGB(AsConfig::BG_Color.R, AsConfig::BG_Color.G, AsConfig::BG_Color.B);
+
+   if (!IntersectRect(&intersection_rect, &paint_area, &Platform_Rect))
+      return;
 
    area_width = Width * AsConfig::Global_Scale;
    area_height = Height * AsConfig::Global_Scale + 1;
@@ -102,11 +113,11 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area)
    for (i = 0; i < area_width; i++)
    {
       x = Platform_Rect.left + i;
-      y_offset = AsConfig::Rand(AsConfig::Meltdown_Speed);
+      y_offset = AsConfig::Rand(AsConfig::Meltdown_Speed) + 1;
 
       for (j = 0; j < area_height; j++)
       {
-         y = Meltdown_Y_Pos - j;
+         y = Meltdown_Platform_Y_Pos[i] - j;
 
          pixel = GetPixel(hdc, x, y);
          SetPixel(hdc, x, y + y_offset, pixel);
@@ -114,12 +125,13 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area)
 
       for (j = 0; j < y_offset; j++)
       {
-         y = Meltdown_Y_Pos - area_height +1 + j;
+         y = Meltdown_Platform_Y_Pos[i] - area_height +1 + j;
 
          SetPixel(hdc, x, y, bg_pixel);
       }
+      Meltdown_Platform_Y_Pos[i] += y_offset;
    }  
-   ++Meltdown_Y_Pos;
+   
 }
 
 void AsPlatform::Draw(HDC hdc, RECT &paint_area)

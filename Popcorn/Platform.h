@@ -33,9 +33,10 @@ private:
 
    static const int Circle_Size = 7;
 
+   static const int Normal_Width = 28;
    int Inner_Width;
-   int Meltdown_Y_Pos;
    static const int Height = 7;  
+   int Meltdown_Platform_Y_Pos[Normal_Width * AsConfig::Global_Scale];
 
    void Draw_Normal_State(HDC hdc, RECT &paint_area);
    void Draw_Meltdown_State(HDC hdc, RECT &paint_area);

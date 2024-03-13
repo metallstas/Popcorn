@@ -5,6 +5,8 @@ const AColor AsConfig::Blue_Brick(85, 255, 255);
 const AColor AsConfig::Ball_Color(255, 255, 255);
 const AColor AsConfig::BG_Color(0, 0, 0);
 
+int AsConfig::Current_Timer_Tick = 0;
+
 HPEN AsConfig::BG_Pen;
 HBRUSH AsConfig::BG_Brush;
 

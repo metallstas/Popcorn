@@ -39,6 +39,7 @@ public:
    static const int Level_Y_Offset = 6;
    static const int Cell_Height = 8;
    static const int Meltdown_Speed = 4;
+   static int Current_Timer_Tick;
 
    static void Setup_Colors();
    static void Create_Pen_Brush(const AColor &color, HPEN &pen, HBRUSH &brush);
