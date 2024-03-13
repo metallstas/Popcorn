@@ -16,7 +16,16 @@ void AsPlatform::Init()
 
 void AsPlatform::Act(HWND hwnd)
 {
-   if(Platform_State != EPS_Meltdown)
+
+   if (Platform_State == EPS_Meltdown)
+   {
+      Redraw(hwnd);
+   }
+}
+
+void AsPlatform::Set_State(EPlatform_State state)
+{
+   if (state == EPS_Meltdown)
    {
       int length = sizeof(Meltdown_Platform_Y_Pos) / sizeof(Meltdown_Platform_Y_Pos[0]);
 
@@ -26,12 +35,10 @@ void AsPlatform::Act(HWND hwnd)
       {
          Meltdown_Platform_Y_Pos[i] = Platform_Rect.bottom;
       }
-      
    }
-
-   if(Platform_State == EPS_Meltdown)
+   else 
    {
-      Redraw(hwnd);
+      Platform_State = state;
    }
 }
 

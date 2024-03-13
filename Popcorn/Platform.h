@@ -6,7 +6,8 @@ enum EPlatform_State
 {
    EPS_Missing,
    EPS_Normal,
-   EPS_Meltdown
+   EPS_Meltdown,
+   ESP_Roll_In
 };
 
 class AsPlatform
@@ -40,4 +41,6 @@ private:
 
    void Draw_Normal_State(HDC hdc, RECT &paint_area);
    void Draw_Meltdown_State(HDC hdc, RECT &paint_area);
+   void Set_State(EPlatform_State state);
+
 };

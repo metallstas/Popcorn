@@ -39,6 +39,7 @@ void ABall::Move(HWND hwnd,  int platform_x_pos, int platform_width, ALevel *lev
 {
    int next_x_pos, next_y_pos;
    int max_x_pos = AsConfig::Max_X_Pos - AsConfig::Ball_Size;
+   int max_y_pos = AsConfig::Max_Y_Pos - AsConfig::Ball_Size;
    int platform_y_pos = AsConfig::Platform_Y_Pos - AsConfig::Ball_Size;
 
    Prev_Ball_Rect = Ball_Rect;
@@ -65,9 +66,9 @@ void ABall::Move(HWND hwnd,  int platform_x_pos, int platform_width, ALevel *lev
       Ball_Direction = M_PI - Ball_Direction;
    }
 
-   if (next_y_pos > AsConfig::Max_Y_Pos)
+   if (next_y_pos > max_y_pos)
    {
-      next_y_pos = AsConfig::Max_Y_Pos - (next_y_pos - AsConfig::Max_Y_Pos);
+      next_y_pos = max_y_pos - (next_y_pos - AsConfig::Max_Y_Pos);
       Ball_Direction = -Ball_Direction;
    }
    //Отражение от платформы
