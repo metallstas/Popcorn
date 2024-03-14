@@ -17,29 +17,28 @@ void AsPlatform::Init()
 void AsPlatform::Act(HWND hwnd)
 {
 
-   if (Platform_State == EPS_Meltdown)
+   if (Platform_State == EPS_Meltdown || Platform_State == EPS_Roll_In)
    {
       Redraw(hwnd);
    }
 }
 
-void AsPlatform::Set_State(EPlatform_State state)
+void AsPlatform::Set_State(EPlatform_State new_state)
 {
-   if (state == EPS_Meltdown)
+   if (Platform_State == new_state)
+      return;
+
+   if (new_state == EPS_Meltdown)
    {
       int length = sizeof(Meltdown_Platform_Y_Pos) / sizeof(Meltdown_Platform_Y_Pos[0]);
-
-      Platform_State = EPS_Meltdown;
 
       for (int i = 0; i < length; i++)
       {
          Meltdown_Platform_Y_Pos[i] = Platform_Rect.bottom;
       }
    }
-   else 
-   {
-      Platform_State = state;
-   }
+
+   Platform_State = new_state;
 }
 
 void AsPlatform::Redraw(HWND hwnd)
@@ -141,6 +140,26 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area)
    
 }
 
+void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT &paint_area)
+{
+
+   int x = X_Pos * AsConfig::Global_Scale;
+   int y = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
+   int roller_size = Circle_Size * AsConfig::Global_Scale;
+
+   SelectObject(hdc, Pen_Pink);
+   SelectObject(hdc, Brush_Pink);
+
+   Ellipse(hdc, x, y, x + roller_size, y + roller_size);
+
+   SelectObject(hdc, AsConfig::BG_Pen);
+   SelectObject(hdc, AsConfig::BG_Brush);
+
+   int ball_strip = 3;
+
+   Rectangle(hdc, x + roller_size / 2 - 1, y, x + roller_size / 2 + 2, y + roller_size);
+}
+
 void AsPlatform::Draw(HDC hdc, RECT &paint_area)
 {
 
@@ -153,6 +172,9 @@ void AsPlatform::Draw(HDC hdc, RECT &paint_area)
       break;
    case EPS_Meltdown:
       Draw_Meltdown_State(hdc, paint_area);
+      break;
+   case EPS_Roll_In:
+      Draw_Roll_In_State(hdc, paint_area);
       break;
    }
 

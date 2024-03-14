@@ -7,7 +7,7 @@ enum EPlatform_State
    EPS_Missing,
    EPS_Normal,
    EPS_Meltdown,
-   ESP_Roll_In
+   EPS_Roll_In
 };
 
 class AsPlatform
@@ -19,6 +19,7 @@ public:
    void Act(HWND hwnd);
    void Redraw(HWND hwnd);
    void Draw(HDC hdc, RECT &paint_area);
+   void Set_State(EPlatform_State state);
 
    int X_Step;
    int Width;
@@ -41,6 +42,5 @@ private:
 
    void Draw_Normal_State(HDC hdc, RECT &paint_area);
    void Draw_Meltdown_State(HDC hdc, RECT &paint_area);
-   void Set_State(EPlatform_State state);
-
+   void Draw_Roll_In_State(HDC hdc, RECT &paint_area);
 };
