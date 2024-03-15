@@ -1,7 +1,8 @@
 ﻿#include "Platform.h"
 
 AsPlatform::AsPlatform()
-   :X_Pos(AsConfig::Border_X_Offset), Meltdown_Platform_Y_Pos{}, X_Step(AsConfig::Global_Scale * 2), Platform_State(EPS_Normal), Width(Normal_Width), Inner_Width(21), Pen_Pink(0), Pen_Blue(0), Brush_Pink(0),
+   :X_Pos(AsConfig::Border_X_Offset), Meltdown_Platform_Y_Pos{}, X_Step(AsConfig::Global_Scale * 2), Platform_State(EPS_Normal), 
+   Width(Normal_Width), Inner_Width(21), Pen_Pink(0), Pen_Blue(0), Brush_Pink(0), Rolling_Step(0),
    Brush_Blue(0), Pen_Black(0), Brush_Black(0), Brush_White(0), Pen_White(0), Platform_Rect{}, Prev_Platform_Rect{}
 {
    X_Pos = (AsConfig::Max_X_Pos - Width) / 2;
@@ -25,17 +26,31 @@ void AsPlatform::Act(HWND hwnd)
 
 void AsPlatform::Set_State(EPlatform_State new_state)
 {
+   int length;
+   int i;
+
    if (Platform_State == new_state)
       return;
 
-   if (new_state == EPS_Meltdown)
+   switch (new_state)
    {
-      int length = sizeof(Meltdown_Platform_Y_Pos) / sizeof(Meltdown_Platform_Y_Pos[0]);
+   case EPS_Missing:
+      break;
 
-      for (int i = 0; i < length; i++)
+   case EPS_Meltdown:
+      length = sizeof(Meltdown_Platform_Y_Pos) / sizeof(Meltdown_Platform_Y_Pos[0]);
+
+      for (i = 0; i < length; i++)
       {
          Meltdown_Platform_Y_Pos[i] = Platform_Rect.bottom;
       }
+      break;
+   case EPS_Roll_In:
+      X_Pos = AsConfig::Max_X_Pos - 1;
+      Rolling_Step = Max_Rolling_Step - 1;
+      break;
+   default:
+      break;
    }
 
    Platform_State = new_state;
@@ -46,10 +61,21 @@ void AsPlatform::Redraw(HWND hwnd)
 
    Prev_Platform_Rect = Platform_Rect;
 
-   Platform_Rect.left = X_Pos * AsConfig::Global_Scale;
-   Platform_Rect.top = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
-   Platform_Rect.right = Platform_Rect.left + Width * AsConfig::Global_Scale;
-   Platform_Rect.bottom = Platform_Rect.top + Height * AsConfig::Global_Scale;
+   if(Platform_State == EPS_Normal || Platform_State == EPS_Meltdown)
+   {
+      Platform_Rect.left = X_Pos * AsConfig::Global_Scale;
+      Platform_Rect.top = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
+      Platform_Rect.right = Platform_Rect.left + Width * AsConfig::Global_Scale;
+      Platform_Rect.bottom = Platform_Rect.top + Height * AsConfig::Global_Scale;
+   }
+
+   if(Platform_State == EPS_Roll_In)
+   {
+      Platform_Rect.left = X_Pos * AsConfig::Global_Scale;
+      Platform_Rect.top = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
+      Platform_Rect.right = Platform_Rect.left + Circle_Size * AsConfig::Global_Scale;
+      Platform_Rect.bottom = Platform_Rect.top + Circle_Size * AsConfig::Global_Scale;
+   }
 
    if(Platform_State == EPS_Meltdown)
    {
@@ -64,34 +90,47 @@ void AsPlatform::Redraw(HWND hwnd)
 
 //------------------------------------------------------------------------------------------------------------
 
-void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area)
+void AsPlatform::Draw_Circle_Highlight(HDC hdc, RECT &paint_area, int x, int y)
 {
-   //Отрисовка Платформы  в нормально мсостоянии
+   //Рисуем Блик на шарике
+   int circle_size = Circle_Size * AsConfig::Global_Scale;
 
-   RECT intersection_rect;
+   SelectObject(hdc, Pen_White);
 
-   int x = X_Pos;
-   int y = AsConfig::Platform_Y_Pos;
-   //Рисуем боковые шарики
-   if (!IntersectRect(&intersection_rect, &paint_area, &Platform_Rect))
-      return;
+   Arc(hdc, x + 3, y + 3, (x - 3 + circle_size), (y - 3 + circle_size), (x + 6), (y + 3) , (x + 3), (y + 6 + 3));
 
+}
+
+void AsPlatform::Clear_BG(HDC hdc)
+{
+   //заливаем фоном предыдущее положение шарика
    SelectObject(hdc, Pen_Black);
    SelectObject(hdc, Brush_Black);
 
    Rectangle(hdc, Prev_Platform_Rect.left, Prev_Platform_Rect.top, Prev_Platform_Rect.right, Prev_Platform_Rect.bottom);
 
+}
+
+void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area)
+{
+   //Отрисовка Платформы  в нормально мсостоянии
+
+   int x = X_Pos * AsConfig::Global_Scale;
+   int y = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
+   int circle_size = Circle_Size * AsConfig::Global_Scale;
+   int platform_width = Inner_Width * AsConfig::Global_Scale;
+   //Рисуем боковые шарики
+
+   //заливаем фоном предыдущее положение шарика
+   Clear_BG(hdc);
+
    SelectObject(hdc, Pen_Pink);
    SelectObject(hdc, Brush_Pink);
 
-   Ellipse(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + Circle_Size) * AsConfig::Global_Scale, (y + Circle_Size) * AsConfig::Global_Scale);
-   Ellipse(hdc, (x + Inner_Width) * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + Inner_Width + Circle_Size) * AsConfig::Global_Scale, (y + Circle_Size) * AsConfig::Global_Scale);
+   Ellipse(hdc, x, y, x + circle_size, y + circle_size);
+   Ellipse(hdc, x + platform_width, y, x + platform_width + circle_size, y + circle_size);
 
-   //Рисуем Блик на шарике
-   SelectObject(hdc, Pen_White);
-
-   Arc(hdc, (x + 1) * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x - 1 + Circle_Size) * AsConfig::Global_Scale, (y - 1 + Circle_Size) * AsConfig::Global_Scale,
-      (x + 2) * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 1) * AsConfig::Global_Scale, (y + 2 + 1) * AsConfig::Global_Scale);
+   Draw_Circle_Highlight(hdc, paint_area, x, y);
 
    //Рисуем центральную частьплатформы
    SelectObject(hdc, Pen_Blue);
@@ -103,15 +142,11 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area)
 
 void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area)
 {
-   RECT intersection_rect;
    int i, j;
    int area_width, area_height;
    int x, y, y_offset;
    COLORREF pixel;
    COLORREF bg_pixel = RGB(AsConfig::BG_Color.R, AsConfig::BG_Color.G, AsConfig::BG_Color.B);
-
-   if (!IntersectRect(&intersection_rect, &paint_area, &Platform_Rect))
-      return;
 
    area_width = Width * AsConfig::Global_Scale;
    area_height = Height * AsConfig::Global_Scale + 1;
@@ -142,26 +177,63 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area)
 
 void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT &paint_area)
 {
-
+   XFORM xform, old_xform;
    int x = X_Pos * AsConfig::Global_Scale;
    int y = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
    int roller_size = Circle_Size * AsConfig::Global_Scale;
+   double alpha;
+
+   Clear_BG(hdc);
 
    SelectObject(hdc, Pen_Pink);
    SelectObject(hdc, Brush_Pink);
 
    Ellipse(hdc, x, y, x + roller_size, y + roller_size);
 
+   SetGraphicsMode(hdc, GM_ADVANCED);
+
+   alpha = -2.0 * M_PI / (double)Max_Rolling_Step * (double)Rolling_Step;
+
+   xform.eM11 = (float)cos(alpha); 
+   xform.eM12 = (float)sin(alpha); 
+   xform.eM21 = (float)-sin(alpha); 
+   xform.eM22 = (float)cos(alpha); 
+   xform.eDx = (float)(x + roller_size / 2); 
+   xform.eDy = (float)(y + roller_size / 2); 
+   GetWorldTransform(hdc, &old_xform);
+   SetWorldTransform(hdc, &xform);
+
    SelectObject(hdc, AsConfig::BG_Pen);
    SelectObject(hdc, AsConfig::BG_Brush);
 
-   int ball_strip = 3;
+   Rectangle(hdc, -AsConfig::Global_Scale / 2, -roller_size / 2, AsConfig::Global_Scale / 2, roller_size / 2);
 
-   Rectangle(hdc, x + roller_size / 2 - 1, y, x + roller_size / 2 + 2, y + roller_size);
+   SetWorldTransform(hdc, &old_xform);
+
+   Draw_Circle_Highlight(hdc, paint_area, x, y);
+
+   ++Rolling_Step;
+
+   if(Rolling_Step >= Max_Rolling_Step)
+   {
+      Rolling_Step = 0;
+   }
+
+   X_Pos -= Rolling_Platform_Speed;
+
+   if (X_Pos <= Roll_In_Platform_End_X_Pos)
+   {
+      //X_Pos = AsConfig::Max_X_Pos / 2;
+      Platform_State = EPS_Expand_Roll_In;
+   }
 }
 
 void AsPlatform::Draw(HDC hdc, RECT &paint_area)
 {
+   RECT intersection_rect;
+
+   if (!IntersectRect(&intersection_rect, &paint_area, &Platform_Rect))
+      return;
 
    switch (Platform_State)
    {
