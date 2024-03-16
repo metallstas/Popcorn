@@ -15,12 +15,12 @@ void AsPlatform::Init()
    AsConfig::Create_Pen_Brush(0, 0, 0, Pen_Black, Brush_Black);
 }
 
-void AsPlatform::Act(HWND hwnd)
+void AsPlatform::Act()
 {
 
-   if (Platform_State == EPS_Meltdown || Platform_State == EPS_Roll_In)
+   if (Platform_State == EPS_Meltdown || Platform_State == EPS_Roll_In || Platform_State == EPS_Expand_Roll_In)
    {
-      Redraw(hwnd);
+      Redraw();
    }
 }
 
@@ -45,10 +45,12 @@ void AsPlatform::Set_State(EPlatform_State new_state)
          Meltdown_Platform_Y_Pos[i] = Platform_Rect.bottom;
       }
       break;
+
    case EPS_Roll_In:
       X_Pos = AsConfig::Max_X_Pos - 1;
       Rolling_Step = Max_Rolling_Step - 1;
       break;
+
    default:
       break;
    }
@@ -56,34 +58,28 @@ void AsPlatform::Set_State(EPlatform_State new_state)
    Platform_State = new_state;
 }
 
-void AsPlatform::Redraw(HWND hwnd)
+void AsPlatform::Redraw()
 {//Отрисовка экрана игры
 
    Prev_Platform_Rect = Platform_Rect;
+   int platform_width;
 
-   if(Platform_State == EPS_Normal || Platform_State == EPS_Meltdown)
-   {
+   if (Platform_State == EPS_Roll_In)
+      platform_width = Circle_Size;
+   else
+      platform_width = Width;
+
       Platform_Rect.left = X_Pos * AsConfig::Global_Scale;
       Platform_Rect.top = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
-      Platform_Rect.right = Platform_Rect.left + Width * AsConfig::Global_Scale;
+      Platform_Rect.right = Platform_Rect.left + platform_width * AsConfig::Global_Scale;
       Platform_Rect.bottom = Platform_Rect.top + Height * AsConfig::Global_Scale;
-   }
-
-   if(Platform_State == EPS_Roll_In)
-   {
-      Platform_Rect.left = X_Pos * AsConfig::Global_Scale;
-      Platform_Rect.top = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
-      Platform_Rect.right = Platform_Rect.left + Circle_Size * AsConfig::Global_Scale;
-      Platform_Rect.bottom = Platform_Rect.top + Circle_Size * AsConfig::Global_Scale;
-   }
+  
 
    if(Platform_State == EPS_Meltdown)
-   {
       Platform_Rect.bottom = (AsConfig::Max_Y_Pos + 1) * AsConfig::Global_Scale;
-   }
 
-   InvalidateRect(hwnd, &Prev_Platform_Rect, FALSE);
-   InvalidateRect(hwnd, &Platform_Rect, FALSE);
+   InvalidateRect(AsConfig::Hwnd, &Prev_Platform_Rect, FALSE);
+   InvalidateRect(AsConfig::Hwnd, &Platform_Rect, FALSE);
 
 }
 
@@ -136,7 +132,8 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area)
    SelectObject(hdc, Pen_Blue);
    SelectObject(hdc, Brush_Blue);
 
-   RoundRect(hdc, (x + 4) * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 4 + Inner_Width - 1) * AsConfig::Global_Scale, (y + 1 + 5) * AsConfig::Global_Scale, 3 * AsConfig::Global_Scale, 3 * AsConfig::Global_Scale);
+   RoundRect(hdc, x + 4 * AsConfig::Global_Scale, y + 1 * AsConfig::Global_Scale, x + (4 - 1 + Inner_Width) * AsConfig::Global_Scale,
+      y + (1 + 5) * AsConfig::Global_Scale, 3 * AsConfig::Global_Scale, 3 * AsConfig::Global_Scale);
 
 }
 
@@ -223,8 +220,25 @@ void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT &paint_area)
 
    if (X_Pos <= Roll_In_Platform_End_X_Pos)
    {
-      //X_Pos = AsConfig::Max_X_Pos / 2;
+      X_Pos += Rolling_Platform_Speed;
       Platform_State = EPS_Expand_Roll_In;
+      Inner_Width = 1;
+   }
+}
+
+void AsPlatform::Draw_Expanding_Roll_In_State(HDC hdc, RECT &paint_area)
+{
+   //Рисуем расширяющуюся платформу
+   Draw_Normal_State(hdc, paint_area);
+
+   --X_Pos;
+   Inner_Width += 2;
+
+   if (Inner_Width >= Normal_Platform_Inner_Width)
+   {
+      Inner_Width = Normal_Platform_Inner_Width;
+      Platform_State = EPS_Normal;
+      Redraw();                        
    }
 }
 
@@ -247,6 +261,9 @@ void AsPlatform::Draw(HDC hdc, RECT &paint_area)
       break;
    case EPS_Roll_In:
       Draw_Roll_In_State(hdc, paint_area);
+      break;
+   case EPS_Expand_Roll_In:
+      Draw_Expanding_Roll_In_State(hdc, paint_area);
       break;
    }
 

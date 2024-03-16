@@ -12,7 +12,7 @@ public:
 
    void Init();
    void Draw(HDC hdc, RECT &paint_area);
-   void Move(HWND hwnd, int platform_x_pos, int platform_width, ALevel *level);
+   void Move(int platform_x_pos, int platform_width, ALevel *level);
 
 private:
    RECT Ball_Rect, Prev_Ball_Rect;

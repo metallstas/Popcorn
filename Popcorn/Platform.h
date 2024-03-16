@@ -17,8 +17,8 @@ public:
 
    AsPlatform();
    void Init();
-   void Act(HWND hwnd);
-   void Redraw(HWND hwnd);
+   void Act();
+   void Redraw();
    void Draw(HDC hdc, RECT &paint_area);
    void Set_State(EPlatform_State state);
 
@@ -40,6 +40,7 @@ private:
    static const int Normal_Width = 28;
    static const int Height = 7;
    static const int Roll_In_Platform_End_X_Pos = AsConfig::Max_X_Pos / 2 - 1;
+   static const int Normal_Platform_Inner_Width = Normal_Width - Circle_Size;
 
    int Meltdown_Platform_Y_Pos[Normal_Width * AsConfig::Global_Scale];
 
@@ -50,6 +51,7 @@ private:
    void Draw_Normal_State(HDC hdc, RECT &paint_area);
    void Draw_Meltdown_State(HDC hdc, RECT &paint_area);
    void Draw_Roll_In_State(HDC hdc, RECT &paint_area);
+   void Draw_Expanding_Roll_In_State(HDC hdc, RECT &paint_area);
    void Draw_Circle_Highlight(HDC hdc, RECT &paint_area, int x, int y);
 
 };

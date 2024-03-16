@@ -9,6 +9,7 @@ int AsConfig::Current_Timer_Tick = 0;
 
 HPEN AsConfig::BG_Pen;
 HBRUSH AsConfig::BG_Brush;
+HWND AsConfig::Hwnd;
 
 AColor::AColor(unsigned char r, unsigned char g, unsigned char b)
    :R(r), G(g), B(b)

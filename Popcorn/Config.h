@@ -18,6 +18,8 @@ class AsConfig
 public:
    AsConfig();
 
+   static HWND Hwnd;
+
    static const AColor BG_Color, Pink_Brick, Blue_Brick, Ball_Color;
    static HPEN BG_Pen;
    static HBRUSH BG_Brush;
