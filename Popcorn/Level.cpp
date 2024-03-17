@@ -19,7 +19,7 @@ char ALevel::Level_01[AsConfig::Level_Height][AsConfig::Level_Width] =
 };
 
 ALevel::ALevel()
-	: Active_Brick(EBT_Pink), Letter_Pen(0), Level_Pen_Pink(0), Level_Pen_Blue(0), Level_Brush_Pink(0), Level_Brush_Blue(0), Level_Rect{} 
+	: Active_Brick(EBT_Pink), Letter_Pen(0), Level_Pen_Pink(0), Level_Pen_Blue(0), Level_Brush_Pink(0), Level_Brush_Blue(0), Level_Rect{}, Has_Floor(false)
 {                                                                                         
 
 
@@ -210,7 +210,7 @@ void ALevel::Draw(HDC hdc, RECT &paint_area)
 
 }
 
-void ALevel::Check_Level_Brick_Hit(int &next_y_pos, double &ball_direction)
+void ALevel::Check_Level_Brick_Hit(double &next_y_pos, double &ball_direction)
 {
    //Отражение от кирпичей
    int brick_y_pos = AsConfig::Level_Y_Offset + AsConfig::Level_Height * AsConfig::Cell_Height;

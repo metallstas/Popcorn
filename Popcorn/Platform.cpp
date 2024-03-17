@@ -24,6 +24,11 @@ void AsPlatform::Act()
    }
 }
 
+EPlatform_State AsPlatform::Get_State()
+{
+   return Platform_State;
+}
+
 void AsPlatform::Set_State(EPlatform_State new_state)
 {
    int length;
@@ -142,14 +147,24 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area)
    int i, j;
    int area_width, area_height;
    int x, y, y_offset;
+   int moved_collums_count = 0;
+   int max_platform_y;
+
    COLORREF pixel;
    COLORREF bg_pixel = RGB(AsConfig::BG_Color.R, AsConfig::BG_Color.G, AsConfig::BG_Color.B);
 
    area_width = Width * AsConfig::Global_Scale;
    area_height = Height * AsConfig::Global_Scale + 1;
+   max_platform_y = AsConfig::Max_Y_Pos * AsConfig::Global_Scale + area_height;
+
 
    for (i = 0; i < area_width; i++)
    {
+      if (Meltdown_Platform_Y_Pos[i] > max_platform_y)
+         continue; 
+
+      ++moved_collums_count;
+
       x = Platform_Rect.left + i;
       y_offset = AsConfig::Rand(AsConfig::Meltdown_Speed) + 1;
 
@@ -169,6 +184,9 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area)
       }
       Meltdown_Platform_Y_Pos[i] += y_offset;
    }  
+
+   if (moved_collums_count == 0)
+      Platform_State = EPS_Missing;
    
 }
 

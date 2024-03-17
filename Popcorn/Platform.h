@@ -16,11 +16,13 @@ class AsPlatform
 public:
 
    AsPlatform();
+
    void Init();
    void Act();
    void Redraw();
    void Draw(HDC hdc, RECT &paint_area);
    void Set_State(EPlatform_State state);
+   EPlatform_State Get_State();
 
    int X_Step;
    int Width;
@@ -35,7 +37,7 @@ private:
    RECT Platform_Rect, Prev_Platform_Rect;
 
    static const int Rolling_Platform_Speed = 3;
-   static const int Max_Rolling_Step = 8;
+   static const int Max_Rolling_Step = 16;
    static const int Circle_Size = 7;
    static const int Normal_Width = 28;
    static const int Height = 7;
