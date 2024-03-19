@@ -7,23 +7,13 @@ ABall::ABall()
    : Ball_State(EBS_Normal), Ball_Rect{}, Prev_Ball_Rect{}, Ball_Pen_White(0), Ball_Brush_White(0), Ball_X_Pos(0), 
      Ball_Y_Pos(Start_Ball_Y_Pos), Ball_Speed(0), Ball_Direction(0)
 {
-   Reset(0);
+   Set_State(EBS_Normal, 0);
 }
 //------------------------------------------------------------------------------------------------------------
-
 
 void ABall::Init()
 {
    AsConfig::Create_Pen_Brush(AsConfig::Ball_Color, Ball_Pen_White, Ball_Brush_White);
-}
-
-void ABall::Reset(int x_pos)
-{
-   Ball_X_Pos = x_pos - AsConfig::Ball_Size / 2;
-   Ball_Y_Pos = Start_Ball_Y_Pos;
-   Ball_State = EBS_Normal;
-   Ball_Speed = 3.0;
-   Ball_Direction = M_PI - M_PI_4;
 }
 
 void ABall::Draw(HDC hdc, RECT &paint_area)
@@ -48,6 +38,17 @@ void ABall::Draw(HDC hdc, RECT &paint_area)
 
       Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right, Ball_Rect.bottom);
    }
+}
+
+void ABall::Redraw()
+{
+   Ball_Rect.left = (int)Ball_X_Pos * AsConfig::Global_Scale;
+   Ball_Rect.top = (int)Ball_Y_Pos * AsConfig::Global_Scale;
+   Ball_Rect.right = Ball_Rect.left + AsConfig::Ball_Size * AsConfig::Global_Scale;
+   Ball_Rect.bottom = Ball_Rect.top + AsConfig::Ball_Size * AsConfig::Global_Scale;
+
+   InvalidateRect(AsConfig::Hwnd, &Prev_Ball_Rect, FALSE);
+   InvalidateRect(AsConfig::Hwnd, &Ball_Rect, FALSE);
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -116,11 +117,46 @@ void ABall::Move(int platform_x_pos, int platform_width, ALevel *level)
    Ball_X_Pos = next_x_pos;
    Ball_Y_Pos = next_y_pos;
 
-   Ball_Rect.left = (int)Ball_X_Pos * AsConfig::Global_Scale;
-   Ball_Rect.top = (int)Ball_Y_Pos * AsConfig::Global_Scale;
-   Ball_Rect.right = Ball_Rect.left + AsConfig::Ball_Size * AsConfig::Global_Scale;
-   Ball_Rect.bottom = Ball_Rect.top + AsConfig::Ball_Size * AsConfig::Global_Scale;
-    
-   InvalidateRect(AsConfig::Hwnd, &Prev_Ball_Rect, FALSE);
-   InvalidateRect(AsConfig::Hwnd, &Ball_Rect, FALSE);
+   Redraw();
+}
+
+EBall_State ABall::Get_Satet()
+{
+   return Ball_State;
+}
+
+void ABall::Set_State(EBall_State new_state, int x_pos)
+{
+   
+   switch (new_state)
+   {
+   case EBS_Lost:
+
+      Ball_Speed = 3.0;
+
+      break;
+
+   case EBS_Normal:
+
+      Ball_X_Pos = x_pos - AsConfig::Ball_Size / 2;
+      Ball_Y_Pos = Start_Ball_Y_Pos;
+      Ball_Speed = 3.0;
+      Ball_Direction = M_PI - M_PI_4;
+      Redraw();
+      break;
+
+   case EBS_On_Platform:
+      Ball_X_Pos = x_pos - AsConfig::Ball_Size / 2;
+      Ball_Y_Pos = Start_Ball_Y_Pos;
+      Ball_Speed = 0.0;
+      Ball_Direction = M_PI - M_PI_4;
+      Redraw(); 
+      break;
+
+   default:
+      break;
+   }
+
+   Ball_State = new_state;
+
 }

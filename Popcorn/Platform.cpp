@@ -255,7 +255,7 @@ void AsPlatform::Draw_Expanding_Roll_In_State(HDC hdc, RECT &paint_area)
    if (Inner_Width >= Normal_Platform_Inner_Width)
    {
       Inner_Width = Normal_Platform_Inner_Width;
-      Platform_State = EPS_Normal;
+      Platform_State = EPS_Ready;
       Redraw();                        
    }
 }

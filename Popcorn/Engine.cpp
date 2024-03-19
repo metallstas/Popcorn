@@ -19,7 +19,7 @@ void AsEngine::Init_Engine(HWND hWnd)
    Border.Init();
    Ball.Init();
 
-   Ball.Reset(ball_x_pos);
+   Ball.Set_State(EBS_Normal, ball_x_pos);
 
    Platform.Set_State(EPS_Normal); 
    Platform.Redraw();
@@ -60,13 +60,20 @@ int AsEngine::On_Key_Down(EKey_Type key_type)
          Platform.X_Pos = AsConfig::Border_X_Offset;
       Platform.Redraw();
       break;
+
    case EKT_Right:
       Platform.X_Pos += Platform.X_Step;
       if (Platform.X_Pos >= AsConfig::Max_X_Pos - Platform.Width + 1)
          Platform.X_Pos = AsConfig::Max_X_Pos - Platform.Width + 1;
       Platform.Redraw();
       break;
+
    case EKT_Space:
+      if (Platform.Get_State() == EPS_Ready)
+      {
+         Platform.Set_State(EPS_Normal);
+         Ball.Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2);
+      }
       break;
    default:
       break;
@@ -84,7 +91,7 @@ int AsEngine::On_Timer()
    {
    case EGS_Play_Level:
       Ball.Move(Platform.X_Pos, Platform.Width, &Level);
-      if (Ball.Ball_State == EBS_Lost)
+      if (Ball.Get_Satet() == EBS_Lost)
       {
          Game_State = EGS_Lost_Ball;
          Platform.Set_State(EPS_Meltdown);
@@ -100,11 +107,13 @@ int AsEngine::On_Timer()
       break;
 
    case EGS_Restart_Level:
-      if (Platform.Get_State() == EPS_Normal)
+      if (Platform.Get_State() == EPS_Ready)
+      {
          Game_State = EGS_Play_Level;
-      Ball.Reset(Platform.X_Pos + Platform.Width / 2);
-      break;
+         Ball.Set_State(EBS_On_Platform, Platform.X_Pos + Platform.Width / 2);
 
+         break;
+      }
    default:
       break;
    }
