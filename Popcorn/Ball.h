@@ -31,8 +31,9 @@ private:
    HBRUSH Ball_Brush_White;
 
    static const double Start_Ball_Y_Pos;
+   static const double Radius;
 
-   double Ball_X_Pos, Ball_Y_Pos;
+   double Center_X_Pos, Center_Y_Pos;
    double Ball_Speed;
    double Ball_Direction;
 
