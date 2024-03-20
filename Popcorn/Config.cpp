@@ -11,6 +11,8 @@ HPEN AsConfig::BG_Pen;
 HBRUSH AsConfig::BG_Brush;
 HWND AsConfig::Hwnd;
 
+bool AsConfig::Level_Has_Floor = false;
+
 AColor::AColor(unsigned char r, unsigned char g, unsigned char b)
    :R(r), G(g), B(b)
 {

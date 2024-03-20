@@ -24,6 +24,8 @@ public:
    static HPEN BG_Pen;
    static HBRUSH BG_Brush;
 
+   static bool Level_Has_Floor;
+
    static const int FPS = 20;
    static const int Ball_Size = 4;
    static const int Global_Scale = 3;

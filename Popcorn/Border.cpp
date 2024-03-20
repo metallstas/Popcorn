@@ -68,3 +68,59 @@ void AsBorder::Draw(HDC hdc, RECT &paint_area)
       Draw_Element(hdc, 3 + i * 4, 0, true);
    }
 }
+
+bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
+{
+   bool got_hit = false;
+   //Корректируем позицию при отражении от рамки
+   if (next_x_pos - ball->Radius < AsConfig::Border_X_Offset)
+   {  
+      got_hit = true;
+      ball->Ball_Direction = M_PI - ball->Ball_Direction;
+   }
+
+   if (next_y_pos - ball->Radius < AsConfig::Border_Y_Offset)
+   {
+      got_hit = true;
+
+      ball->Ball_Direction = -ball->Ball_Direction;
+   }
+
+   if (next_x_pos + ball->Radius > AsConfig::Max_X_Pos + ball->Radius)
+   {
+      got_hit = true;
+
+      ball->Ball_Direction = M_PI - ball->Ball_Direction;
+   }
+
+   if (next_y_pos + ball->Radius > AsConfig::Max_Y_Pos)
+   {
+      if (AsConfig::Level_Has_Floor)
+      {
+         next_y_pos = AsConfig::Max_Y_Pos - (next_y_pos - AsConfig::Max_Y_Pos);
+         ball->Ball_Direction = -ball->Ball_Direction;
+      }
+      else
+      {
+         if (next_y_pos + ball->Radius > AsConfig::Max_Y_Pos + ball->Radius * 4)
+            ball->Set_State(EBS_Lost, next_x_pos);
+      }
+
+   }
+
+   if (next_y_pos + ball->Radius > AsConfig::Max_Y_Pos)
+   {
+      if (AsConfig::Level_Has_Floor)
+      {
+         next_y_pos = AsConfig::Max_Y_Pos - (next_y_pos - AsConfig::Max_Y_Pos);
+         ball->Ball_Direction = -ball->Ball_Direction;
+      }
+      else
+      {
+         if (next_y_pos + ball->Radius > AsConfig::Max_Y_Pos + ball->Radius * 4)
+            ball->Set_State(EBS_Lost, next_x_pos);
+      }
+
+   }
+   return got_hit;
+}

@@ -54,7 +54,7 @@ void ABall::Redraw()
 
 //------------------------------------------------------------------------------------------------------------
 
-void ABall::Move(int platform_x_pos, int platform_width, ALevel *level)
+void ABall::Move(int platform_x_pos, int platform_width, ALevel *level, AHit_Checker *hit_checker)
 {
    double next_x_pos, next_y_pos;
    double step_size = 1.0 / AsConfig::Global_Scale;
@@ -76,44 +76,8 @@ void ABall::Move(int platform_x_pos, int platform_width, ALevel *level)
       next_x_pos = Center_X_Pos + (step_size * cos(Ball_Direction));
       next_y_pos = Center_Y_Pos - (step_size * sin(Ball_Direction));
 
-      //Корректируем позицию при отражении от рамки
-      if (next_x_pos - Radius < AsConfig::Border_X_Offset)
-      {  
-         got_hit = true;
-         //next_x_pos = AsConfig::Level_X_Offset - (next_x_pos - AsConfig::Level_X_Offset);
-         Ball_Direction = M_PI - Ball_Direction;
-      }
+      got_hit = hit_checker->Check_Hit(next_x_pos, next_y_pos, this);
 
-      if (next_y_pos - Radius < AsConfig::Border_Y_Offset)
-      {
-         got_hit = true;
-
-         //next_y_pos = AsConfig::Border_Y_Offset - (next_y_pos - AsConfig::Border_Y_Offset);
-         Ball_Direction = -Ball_Direction;
-      }
-
-      if (next_x_pos + Radius > AsConfig::Max_X_Pos + Radius)
-      {
-         got_hit = true;
-
-         //next_x_pos = AsConfig::Max_X_Pos - (next_x_pos - AsConfig::Max_X_Pos);
-         Ball_Direction = M_PI - Ball_Direction;
-      }
-
-      if (next_y_pos + Radius > AsConfig::Max_Y_Pos)
-      {
-         if (level->Has_Floor)
-         {
-            next_y_pos = AsConfig::Max_Y_Pos - (next_y_pos - AsConfig::Max_Y_Pos);
-            Ball_Direction = -Ball_Direction;
-         }
-         else
-         {
-            if (next_y_pos + Radius > AsConfig::Max_Y_Pos + Radius * 4)
-            Ball_State = EBS_Lost;
-         }
-
-      }
       //Отражение от платформы
 
       //if (next_y_pos + Radius > platform_y_pos)
@@ -145,7 +109,7 @@ EBall_State ABall::Get_Satet()
    return Ball_State;
 }
 
-void ABall::Set_State(EBall_State new_state, int x_pos)
+void ABall::Set_State(EBall_State new_state, double x_pos)
 {
    
    switch (new_state)
