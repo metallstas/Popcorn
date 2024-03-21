@@ -225,10 +225,11 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
             continue;
          if (next_y_pos < brick_y_pos)
          {
-            next_y_pos = brick_y_pos - (next_y_pos - brick_y_pos);
-            ball_direction = -ball_direction;
+            ball->Ball_Direction = -ball->Ball_Direction;
+            return true;
          }
       }
       brick_y_pos -= AsConfig::Cell_Height;
    }
+   return false;
 }

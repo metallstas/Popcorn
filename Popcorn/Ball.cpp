@@ -54,7 +54,7 @@ void ABall::Redraw()
 
 //------------------------------------------------------------------------------------------------------------
 
-void ABall::Move(int platform_x_pos, int platform_width, ALevel *level, AHit_Checker *hit_checker)
+void ABall::Move(int platform_x_pos, int platform_width, AHit_Checker *level_hit_checker, AHit_Checker *border_hit_checker)
 {
    double next_x_pos, next_y_pos;
    double step_size = 1.0 / AsConfig::Global_Scale;
@@ -76,7 +76,7 @@ void ABall::Move(int platform_x_pos, int platform_width, ALevel *level, AHit_Che
       next_x_pos = Center_X_Pos + (step_size * cos(Ball_Direction));
       next_y_pos = Center_Y_Pos - (step_size * sin(Ball_Direction));
 
-      got_hit = hit_checker->Check_Hit(next_x_pos, next_y_pos, this);
+      got_hit = border_hit_checker->Check_Hit(next_x_pos, next_y_pos, this);
 
       //Отражение от платформы
 
@@ -89,7 +89,7 @@ void ABall::Move(int platform_x_pos, int platform_width, ALevel *level, AHit_Che
       //   }
       //}
 
-      //level->Check_Level_Brick_Hit(next_y_pos, Ball_Direction);
+      level_hit_checker->Check_Hit(next_x_pos, next_y_pos, this);
 
       if (!got_hit)
       {  //Продолжит движение если нет столкновения с другими обьектами
