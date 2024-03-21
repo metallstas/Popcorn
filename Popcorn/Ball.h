@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "Config.h"
-#include "Level.h"
 
 enum EBall_State
 {
@@ -30,7 +29,7 @@ public:
 
    void Init();
    void Draw(HDC hdc, RECT &paint_area);
-   void Move(int platform_x_pos, int platform_width, ALevel *level, AHit_Checker *hit_checker);
+   void Move(int platform_x_pos, int platform_width, AHit_Checker *level, AHit_Checker *hit_checker);
    EBall_State Get_Satet();
    void Set_State(EBall_State new_state, double x_pos);
 
@@ -44,6 +43,7 @@ private:
 
    double Center_X_Pos, Center_Y_Pos;
    double Ball_Speed;
+   double Rest_Distance;
 
    void Redraw();
 

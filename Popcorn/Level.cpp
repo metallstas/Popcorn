@@ -210,7 +210,8 @@ void ALevel::Draw(HDC hdc, RECT &paint_area)
 
 }
 
-void ALevel::Check_Level_Brick_Hit(double &next_y_pos, double &ball_direction)
+bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
+
 {
    //Отражение от кирпичей
    int brick_y_pos = AsConfig::Level_Y_Offset + AsConfig::Level_Height * AsConfig::Cell_Height;

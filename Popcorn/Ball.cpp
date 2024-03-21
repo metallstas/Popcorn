@@ -6,7 +6,7 @@ const double ABall::Radius = 2.0;
 
 ABall::ABall()
    : Ball_State(EBS_Normal), Ball_Rect{}, Prev_Ball_Rect{}, Ball_Pen_White(0), Ball_Brush_White(0), Center_X_Pos(0), 
-     Center_Y_Pos(Start_Ball_Y_Pos), Ball_Speed(0), Ball_Direction(0)
+     Center_Y_Pos(Start_Ball_Y_Pos), Ball_Speed(0), Ball_Direction(0), Rest_Distance(0)
 {
    Set_State(EBS_Normal, 0);
 }
@@ -58,7 +58,6 @@ void ABall::Move(int platform_x_pos, int platform_width, ALevel *level, AHit_Che
 {
    double next_x_pos, next_y_pos;
    double step_size = 1.0 / AsConfig::Global_Scale;
-   double rest_distance = Ball_Speed;
 
    bool got_hit;
 
@@ -68,8 +67,9 @@ void ABall::Move(int platform_x_pos, int platform_width, ALevel *level, AHit_Che
       return;
 
    Prev_Ball_Rect = Ball_Rect;
+   Rest_Distance += Ball_Speed;
 
-   while (rest_distance > step_size)
+   while (Rest_Distance > step_size)
    {
       got_hit = false;
 
@@ -93,7 +93,7 @@ void ABall::Move(int platform_x_pos, int platform_width, ALevel *level, AHit_Che
 
       if (!got_hit)
       {  //Продолжит движение если нет столкновения с другими обьектами
-         rest_distance -= step_size; 
+         Rest_Distance -= step_size; 
 
          Center_X_Pos = next_x_pos;
          Center_Y_Pos = next_y_pos;
@@ -125,6 +125,7 @@ void ABall::Set_State(EBall_State new_state, double x_pos)
       Center_X_Pos = x_pos;
       Center_Y_Pos = Start_Ball_Y_Pos;
       Ball_Speed = 3.0;
+      Rest_Distance = 0.0;
       Ball_Direction = M_PI - M_PI_4;
       Redraw();
       break;
@@ -133,6 +134,7 @@ void ABall::Set_State(EBall_State new_state, double x_pos)
       Center_X_Pos = x_pos;
       Center_Y_Pos = Start_Ball_Y_Pos;
       Ball_Speed = 0.0;
+      Rest_Distance = 0.0;
       Ball_Direction = M_PI - M_PI_4;
       Redraw(); 
       break;
