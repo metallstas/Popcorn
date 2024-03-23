@@ -219,7 +219,7 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
    for (int i = AsConfig::Level_Height - 1; i >= 0; i--)
    {
 
-      for (int j = 0; j < AsConfig::Level_Width; j++)
+      for (int j = 0; j < AsConfig::Level_Width - 1; j++)
       {
          if (Level_01[i][j] == 0)
             continue;

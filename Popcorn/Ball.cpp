@@ -28,7 +28,7 @@ void ABall::Draw(HDC hdc, RECT &paint_area)
       SelectObject(hdc, AsConfig::BG_Pen);
       SelectObject(hdc, AsConfig::BG_Brush);
 
-      Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right - 1, Prev_Ball_Rect.bottom - 1);
+      Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right, Prev_Ball_Rect.bottom);
 
    }
    if (IntersectRect(&intersection_rect, &paint_area, &Ball_Rect))
@@ -37,14 +37,14 @@ void ABall::Draw(HDC hdc, RECT &paint_area)
       SelectObject(hdc, Ball_Pen_White);
       SelectObject(hdc, Ball_Brush_White);
 
-      Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right - 1, Ball_Rect.bottom - 1);
+      Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right, Ball_Rect.bottom);
    }
 }
 
 void ABall::Redraw()
 {
-   Ball_Rect.left = (int)(Center_X_Pos - Radius) * AsConfig::Global_Scale;
-   Ball_Rect.top = (int)(Center_Y_Pos - Radius) * AsConfig::Global_Scale;
+   Ball_Rect.left = (int)(Center_X_Pos - Radius + 1) * AsConfig::Global_Scale;
+   Ball_Rect.top = (int)(Center_Y_Pos - Radius + 1) * AsConfig::Global_Scale;
    Ball_Rect.right = (int)(Center_X_Pos + Radius) * AsConfig::Global_Scale;
    Ball_Rect.bottom = (int)(Center_Y_Pos + Radius) * AsConfig::Global_Scale;
 
@@ -54,7 +54,7 @@ void ABall::Redraw()
 
 //------------------------------------------------------------------------------------------------------------
 
-void ABall::Move(int platform_x_pos, int platform_width, AHit_Checker *level_hit_checker, AHit_Checker *border_hit_checker)
+void ABall::Move(AHit_Checker *level_hit_checker, AHit_Checker *border_hit_checker, AHit_Checker *platform_hit_checker)
 {
    double next_x_pos, next_y_pos;
    double step_size = 1.0 / AsConfig::Global_Scale;
@@ -76,20 +76,15 @@ void ABall::Move(int platform_x_pos, int platform_width, AHit_Checker *level_hit
       next_x_pos = Center_X_Pos + (step_size * cos(Ball_Direction));
       next_y_pos = Center_Y_Pos - (step_size * sin(Ball_Direction));
 
-      got_hit = border_hit_checker->Check_Hit(next_x_pos, next_y_pos, this);
+      //Отражение мяча от рамки уровня
+      got_hit = got_hit || border_hit_checker->Check_Hit(next_x_pos, next_y_pos, this);
+
+      // Отражение от кирпичей
+      got_hit = got_hit || level_hit_checker->Check_Hit(next_x_pos, next_y_pos, this); 
 
       //Отражение от платформы
+      got_hit = got_hit || platform_hit_checker->Check_Hit(next_x_pos, next_y_pos, this);
 
-      //if (next_y_pos + Radius > platform_y_pos)
-      //{
-      //   if (next_x_pos >= platform_x_pos && next_x_pos <= platform_x_pos + platform_width)
-      //   {
-      //      next_y_pos = platform_y_pos - (next_y_pos - platform_y_pos);
-      //      Ball_Direction = -Ball_Direction;
-      //   }
-      //}
-
-      level_hit_checker->Check_Hit(next_x_pos, next_y_pos, this);
 
       if (!got_hit)
       {  //Продолжит движение если нет столкновения с другими обьектами

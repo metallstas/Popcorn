@@ -29,7 +29,7 @@ public:
 
    void Init();
    void Draw(HDC hdc, RECT &paint_area);
-   void Move(int platform_x_pos, int platform_width, AHit_Checker *level_hit_checker, AHit_Checker *border_hit_checker);
+   void Move(AHit_Checker *level_hit_checker, AHit_Checker *border_hit_checker, AHit_Checker *platform_hit_checker);
    EBall_State Get_Satet();
    void Set_State(EBall_State new_state, double x_pos);
 
