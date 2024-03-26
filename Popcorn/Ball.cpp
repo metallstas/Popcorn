@@ -2,7 +2,8 @@
 
 const double ABall::Start_Ball_Y_Pos = 181.0;
 const double ABall::Radius = 2.0;
-
+int ABall::Hit_Checkers_Count = 0;
+AHit_Checker *ABall::Hit_Checkers[] = {};
 
 ABall::ABall()
    : Ball_State(EBS_Normal), Ball_Rect{}, Prev_Ball_Rect{}, Ball_Pen_White(0), Ball_Brush_White(0), Center_X_Pos(0), 
@@ -54,7 +55,7 @@ void ABall::Redraw()
 
 //------------------------------------------------------------------------------------------------------------
 
-void ABall::Move(AHit_Checker *level_hit_checker, AHit_Checker *border_hit_checker, AHit_Checker *platform_hit_checker)
+void ABall::Move()
 {
    double next_x_pos, next_y_pos;
    double step_size = 1.0 / AsConfig::Global_Scale;
@@ -76,14 +77,15 @@ void ABall::Move(AHit_Checker *level_hit_checker, AHit_Checker *border_hit_check
       next_x_pos = Center_X_Pos + (step_size * cos(Ball_Direction));
       next_y_pos = Center_Y_Pos - (step_size * sin(Ball_Direction));
 
+
       //Отражение мяча от рамки уровня
-      got_hit = got_hit || border_hit_checker->Check_Hit(next_x_pos, next_y_pos, this);
-
       // Отражение от кирпичей
-      got_hit = got_hit || level_hit_checker->Check_Hit(next_x_pos, next_y_pos, this); 
-
       //Отражение от платформы
-      got_hit = got_hit || platform_hit_checker->Check_Hit(next_x_pos, next_y_pos, this);
+
+      for (int i = 0; i < Hit_Checkers_Count; i++)
+      {
+         got_hit = got_hit || Hit_Checkers[i]->Check_Hit(next_x_pos, next_y_pos, this);
+      }
 
 
       if (!got_hit)
@@ -140,4 +142,12 @@ void ABall::Set_State(EBall_State new_state, double x_pos)
 
    Ball_State = new_state;
 
+}
+
+void ABall::Add_Hit_Checker(AHit_Checker *hit_checker)
+{
+   if (Hit_Checkers_Count >= sizeof(Hit_Checkers) / sizeof(Hit_Checkers[0]))
+      return;
+   
+   Hit_Checkers[Hit_Checkers_Count++] = hit_checker;
 }

@@ -29,9 +29,11 @@ public:
 
    void Init();
    void Draw(HDC hdc, RECT &paint_area);
-   void Move(AHit_Checker *level_hit_checker, AHit_Checker *border_hit_checker, AHit_Checker *platform_hit_checker);
+   void Move();
    EBall_State Get_Satet();
    void Set_State(EBall_State new_state, double x_pos);
+
+   static void Add_Hit_Checker(AHit_Checker *hit_checker);
 
 private:
 
@@ -40,6 +42,9 @@ private:
    HBRUSH Ball_Brush_White;
 
    static const double Start_Ball_Y_Pos;
+   static int Hit_Checkers_Count;
+
+   static AHit_Checker *Hit_Checkers[3];
 
    double Center_X_Pos, Center_Y_Pos;
    double Ball_Speed;
