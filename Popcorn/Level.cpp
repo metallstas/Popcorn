@@ -213,17 +213,33 @@ void ALevel::Draw(HDC hdc, RECT &paint_area)
 bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 
 {
+   double x, y;
+   double brick_left_x, brick_right_x;
+
    //Отражение от кирпичей
-   int brick_y_pos = AsConfig::Level_Y_Offset + AsConfig::Level_Height * AsConfig::Cell_Height;
+   int brick_y_pos = AsConfig::Level_Y_Offset + (AsConfig::Level_Height - 1) * AsConfig::Cell_Height + AsConfig::Brick_Height;
 
    for (int i = AsConfig::Level_Height - 1; i >= 0; i--)
    {
 
-      for (int j = 0; j < AsConfig::Level_Width - 1; j++)
+      for (int j = 0; j < AsConfig::Level_Width; j++)
       {
          if (Level_01[i][j] == 0)
             continue;
-         if (next_y_pos < brick_y_pos)
+
+         y = next_y_pos - brick_y_pos;
+
+         if (y > ball->Radius)
+            continue;
+   
+         x = sqrt(ball->Radius * ball->Radius + y * y);
+
+         brick_left_x = AsConfig::Level_X_Offset + j * AsConfig::Cell_Width;
+         brick_right_x = brick_left_x + AsConfig::Cell_Width;
+         
+
+         if (next_x_pos + x >= brick_left_x && next_x_pos + x <= brick_right_x ||
+             next_x_pos - x >= brick_left_x && next_x_pos - x <= brick_right_x) 
          {
             ball->Ball_Direction = -ball->Ball_Direction;
             return true;
@@ -231,5 +247,6 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
       }
       brick_y_pos -= AsConfig::Cell_Height;
    }
+
    return false;
 }

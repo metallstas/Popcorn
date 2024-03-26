@@ -29,7 +29,7 @@ void ABall::Draw(HDC hdc, RECT &paint_area)
       SelectObject(hdc, AsConfig::BG_Pen);
       SelectObject(hdc, AsConfig::BG_Brush);
 
-      Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right, Prev_Ball_Rect.bottom);
+      Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right - 1, Prev_Ball_Rect.bottom - 1);
 
    }
    if (IntersectRect(&intersection_rect, &paint_area, &Ball_Rect))
@@ -38,14 +38,14 @@ void ABall::Draw(HDC hdc, RECT &paint_area)
       SelectObject(hdc, Ball_Pen_White);
       SelectObject(hdc, Ball_Brush_White);
 
-      Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right, Ball_Rect.bottom);
+      Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right - 1, Ball_Rect.bottom - 1);
    }
 }
 
 void ABall::Redraw()
 {
-   Ball_Rect.left = (int)(Center_X_Pos - Radius + 1) * AsConfig::Global_Scale;
-   Ball_Rect.top = (int)(Center_Y_Pos - Radius + 1) * AsConfig::Global_Scale;
+   Ball_Rect.left = (int)(Center_X_Pos - Radius) * AsConfig::Global_Scale;
+   Ball_Rect.top = (int)(Center_Y_Pos - Radius) * AsConfig::Global_Scale;
    Ball_Rect.right = (int)(Center_X_Pos + Radius) * AsConfig::Global_Scale;
    Ball_Rect.bottom = (int)(Center_Y_Pos + Radius) * AsConfig::Global_Scale;
 
@@ -61,8 +61,6 @@ void ABall::Move()
    double step_size = 1.0 / AsConfig::Global_Scale;
 
    bool got_hit;
-
-   int platform_y_pos = AsConfig::Platform_Y_Pos - AsConfig::Ball_Size;
 
    if (Ball_State != EBS_Normal)
       return;
@@ -123,7 +121,7 @@ void ABall::Set_State(EBall_State new_state, double x_pos)
       Center_Y_Pos = Start_Ball_Y_Pos;
       Ball_Speed = 3.0;
       Rest_Distance = 0.0;
-      Ball_Direction = M_PI - M_PI_4;
+      Ball_Direction = M_PI_4;
       Redraw();
       break;
 
@@ -132,7 +130,7 @@ void ABall::Set_State(EBall_State new_state, double x_pos)
       Center_Y_Pos = Start_Ball_Y_Pos;
       Ball_Speed = 0.0;
       Rest_Distance = 0.0;
-      Ball_Direction = M_PI - M_PI_4;
+      Ball_Direction = M_PI_4;
       Redraw(); 
       break;
 
