@@ -149,3 +149,21 @@ void ABall::Add_Hit_Checker(AHit_Checker *hit_checker)
    
    Hit_Checkers[Hit_Checkers_Count++] = hit_checker;
 }
+
+double ABall::Get_Direction()
+{
+   return Ball_Direction;
+}
+
+void ABall::Set_Direction(double new_direction)
+{
+   while (new_direction > M_PI * 2)
+   {
+      new_direction - M_PI * 2;
+   }
+
+   while (new_direction < 0.0)
+      new_direction += M_PI * 2;
+
+   Ball_Direction = new_direction;
+}

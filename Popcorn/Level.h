@@ -28,6 +28,7 @@ private:
 
    static char Level_01[AsConfig::Level_Height][AsConfig::Level_Width];
 
+   bool Hit_Circle_On_Line(double y, double next_x_pos, double radius, double left_x, double right_x);
    void Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type);
    void Set_Brick_Letter_Color(bool is_switch_color, HPEN &front_pen, HPEN &back_pen, HBRUSH &front_brush, HBRUSH &back_brush);
    void Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, ELetter_Type letter_type, int rotation_step);

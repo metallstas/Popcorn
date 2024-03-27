@@ -24,7 +24,6 @@ public:
    ABall();
 
    EBall_State Ball_State;
-   double Ball_Direction;
    static const double Radius;
 
    void Init();
@@ -32,6 +31,8 @@ public:
    void Move();
    EBall_State Get_Satet();
    void Set_State(EBall_State new_state, double x_pos);
+   double Get_Direction();
+   void Set_Direction(double new_direction);
 
    static void Add_Hit_Checker(AHit_Checker *hit_checker);
 
@@ -43,6 +44,7 @@ private:
 
    static const double Start_Ball_Y_Pos;
    static int Hit_Checkers_Count;
+   double Ball_Direction;
 
    static AHit_Checker *Hit_Checkers[3];
 

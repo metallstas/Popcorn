@@ -76,21 +76,24 @@ bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
    if (next_x_pos - ball->Radius < AsConfig::Border_X_Offset)
    {  
       got_hit = true;
-      ball->Ball_Direction = M_PI - ball->Ball_Direction;
+      //ball->Ball_Direction = M_PI - ball->Ball_Direction;
+      ball->Set_Direction(M_PI - ball->Get_Direction());
    }
 
    if (next_y_pos - ball->Radius < AsConfig::Border_Y_Offset)
    {
       got_hit = true;
 
-      ball->Ball_Direction = -ball->Ball_Direction;
+      //ball->Ball_Direction = -ball->Ball_Direction;
+      ball->Set_Direction(-ball->Get_Direction());
    }
 
    if (next_x_pos + ball->Radius > AsConfig::Max_X_Pos + ball->Radius)
    {
       got_hit = true;
 
-      ball->Ball_Direction = M_PI - ball->Ball_Direction;
+      //ball->Ball_Direction = M_PI - ball->Ball_Direction;
+      ball->Set_Direction(M_PI - ball->Get_Direction());
    }
 
    if (next_y_pos + ball->Radius > AsConfig::Max_Y_Pos)
@@ -98,7 +101,8 @@ bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
       if (AsConfig::Level_Has_Floor)
       {
          next_y_pos = AsConfig::Max_Y_Pos - (next_y_pos - AsConfig::Max_Y_Pos);
-         ball->Ball_Direction = -ball->Ball_Direction;
+         //ball->Ball_Direction = -ball->Ball_Direction;
+         ball->Set_Direction( -ball->Get_Direction());
       }
       else
       {
@@ -113,7 +117,8 @@ bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
       if (AsConfig::Level_Has_Floor)
       {
          next_y_pos = AsConfig::Max_Y_Pos - (next_y_pos - AsConfig::Max_Y_Pos);
-         ball->Ball_Direction = -ball->Ball_Direction;
+         //ball->Ball_Direction = -ball->Ball_Direction;
+         ball->Set_Direction(-ball->Get_Direction());
       }
       else
       {
