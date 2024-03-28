@@ -257,8 +257,7 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 
             if (Hit_Circle_On_Line(next_y_pos - brick_low_y, next_x_pos, ball->Radius, left_x, right_x))
             {
-               //ball->Ball_Direction = -ball->Ball_Direction;
-               ball->Set_Direction(-ball->Get_Direction());
+               ball->Reflect(true);
                return true;
             }
          }
@@ -268,9 +267,7 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
          {
             if (Hit_Circle_On_Line(next_y_pos - brick_top_y, next_x_pos, ball->Radius, left_x, right_x))
             {
-               //ball->Ball_Direction = -ball->Ball_Direction;
-               ball->Set_Direction(-ball->Get_Direction());
-
+               ball->Reflect(true);
                return true;
             }
          }

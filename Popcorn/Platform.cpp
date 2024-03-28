@@ -20,10 +20,10 @@ bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 
    if (next_y_pos + ball->Radius > AsConfig::Platform_Y_Pos)
    {
-      if (next_x_pos >= X_Pos && next_x_pos - ball->Radius <= X_Pos + Width)
+      if (next_x_pos + ball->Radius >= X_Pos && next_x_pos - ball->Radius <= X_Pos + Width)
       {
-         //ball->Ball_Direction = -ball->Ball_Direction;
-         ball->Set_Direction(-ball->Get_Direction());
+         ball->Reflect(true);
+
          return true;
       }
       

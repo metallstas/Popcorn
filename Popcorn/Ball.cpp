@@ -99,6 +99,19 @@ void ABall::Move()
    Redraw();
 }
 
+void ABall::Reflect(bool from_horizontal)
+{
+   if (from_horizontal)
+   {
+      Set_Direction(-Get_Direction());
+   }
+   else
+   {
+      Set_Direction(M_PI - Get_Direction());
+   }
+
+}
+
 EBall_State ABall::Get_Satet()
 {
    return Ball_State;
