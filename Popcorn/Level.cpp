@@ -3,14 +3,14 @@
 char ALevel::Level_01[AsConfig::Level_Height][AsConfig::Level_Width] =
 {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0,
+	0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+	0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+	0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0,
+	0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -219,7 +219,7 @@ bool ALevel::Hit_Circle_On_Line(double y, double next_x_pos, double radius, doub
    if (y > radius)
       return false;
 
-   x = sqrt(radius * radius + y * y);
+   x = sqrt(radius * radius - y * y);
 
    max_x = next_x_pos + x;
    min_x = next_x_pos - x;
@@ -249,9 +249,9 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
             continue;
 
          left_x = AsConfig::Level_X_Offset + j * AsConfig::Cell_Width;
-         right_x = left_x + AsConfig::Cell_Width;
+         right_x = left_x + AsConfig::Brick_Width;
 
-         //Проверяем поподание в нижнюю грань кирпича
+         //Проверяем поподание в верхнюю грань кирпича
          if (direction >= 0 && direction < M_PI)
          {
 
@@ -271,8 +271,28 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
                return true;
             }
          }
+         //Проверяем поподание в левую грань кирпича
+         if (direction >= 0.0 && direction < M_PI_2 || direction >= M_PI + M_PI_2 && direction <= M_PI * 2)
+         {
+
+            if (Hit_Circle_On_Line(left_x - next_x_pos, next_y_pos, ball->Radius, brick_top_y, brick_low_y))
+            {
+               ball->Reflect(false);
+               return true;
+            }
+         }
+         //Проверяем поподание в правую грань кирпича
+
+         if (direction > M_PI_2 && direction <= M_PI + M_PI_2)
+         {
+
+            if (Hit_Circle_On_Line(right_x - next_x_pos, next_y_pos, ball->Radius, brick_top_y, brick_low_y))
+            {
+               ball->Reflect(false);
+               return true;
+            }
+         }
       }
-      brick_low_y -= AsConfig::Cell_Height;
    }
 
    return false;

@@ -23,7 +23,6 @@ bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
       if (next_x_pos + ball->Radius >= X_Pos && next_x_pos - ball->Radius <= X_Pos + Width)
       {
          ball->Reflect(true);
-
          return true;
       }
       
